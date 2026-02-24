@@ -3,9 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Bicycle Maintenance Log</title>
+<title>BikeCare</title>
 
-<!-- PWA / iPad App Support -->
+<!-- PWA Support -->
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -21,7 +21,7 @@ body {
     margin: 20px;
 }
 
-h1 {
+h1, h2 {
     text-align: center;
 }
 
@@ -57,6 +57,9 @@ button {
 .add-btn { background: #2d6cdf; color: white; }
 .export-btn { background: #28a745; color: white; }
 .clear-btn { background: #dc3545; color: white; }
+.status-btn { background: #ff9800; color: white; }
+.edit-btn { background: #17a2b8; color: white; }
+.delete-btn { background: #dc3545; color: white; }
 
 table {
     width: 100%;
@@ -79,26 +82,34 @@ tr:nth-child(even) {
     background: #2a2a2a;
 }
 
-.status-btn {
-    background: #ff9800;
-    color: white;
+.card {
+    background: #1e1e1e;
+    padding: 15px;
+    border-radius: 10px;
+    margin-top: 10px;
 }
 
-.edit-btn {
-    background: #17a2b8;
-    color: white;
+.collapsible {
+    cursor: pointer;
+    padding: 8px;
+    background: #2d6cdf;
+    border-radius: 6px;
+    margin-top: 8px;
 }
 
-.delete-btn {
-    background: #dc3545;
-    color: white;
+.collapsible-content {
+    display: none;
+    padding: 10px;
+    background: #2a2a2a;
+    border-radius: 6px;
+    margin-top: 5px;
 }
 </style>
 </head>
 
 <body>
 
-<h1>Bicycle Maintenance Log</h1>
+<h1>BikeCare Maintenance Log</h1>
 
 <form id="logForm">
 <label>Date:</label>
@@ -153,6 +164,121 @@ tr:nth-child(even) {
 <tbody id="logTable"></tbody>
 </table>
 
+<!-- Guide -->
+<section>
+<h2>Maintenance & Repair Guide</h2>
+<button id="toggleGuide">Show Guide</button>
+<div class="card" id="guideCard" style="display:none;">
+
+<!-- Collapsible sections -->
+<div>
+<h3 class="collapsible">1. Safety First</h3>
+<div class="collapsible-content">
+<ul>
+<li>Clean, well-lit workspace</li>
+<li>Gloves to protect hands</li>
+<li>Rags or old towels</li>
+<li>Bicycle stand (optional)</li>
+<li>Lubricants, degreaser, and cleaning brushes</li>
+<li>Basic tools: wrenches, screwdrivers, tire levers, pump, chain tool</li>
+</ul>
+</div>
+
+<h3 class="collapsible">2. Cleaning Your Bicycle</h3>
+<div class="collapsible-content">
+<ol>
+<li><strong>Remove loose dirt</strong>: Use soft brush or cloth.</li>
+<li><strong>Wash frame & wheels</strong>: Mild soap + water, avoid high-pressure near bearings.</li>
+<li><strong>Clean chain & drivetrain</strong>: Degrease, brush, rinse lightly.</li>
+<li><strong>Dry thoroughly</strong>: Make sure chain, brakes, hubs are dry.</li>
+<li><strong>Lubricate</strong>: Chain lube sparingly, wipe excess, lubricate brake pivots, pedals, moving parts.</li>
+</ol>
+</div>
+
+<h3 class="collapsible">3. Tire & Wheel Maintenance</h3>
+<div class="collapsible-content">
+<ul>
+<li>Check air pressure (30–60 PSI)</li>
+<li>Inspect for damage (cuts, bulges, objects)</li>
+<li>Fix flat tires: Remove wheel, replace/patch tube, reinstall and inflate</li>
+<li>True wheels (if wobbling): Adjust spokes evenly</li>
+</ul>
+</div>
+
+<h3 class="collapsible">4. Brake System</h3>
+<div class="collapsible-content">
+<ul>
+<li>Check brake pads & cables</li>
+<li>Adjust: Loosen cable bolt, pull lever, re-tighten, pads square on rim</li>
+</ul>
+</div>
+
+<h3 class="collapsible">5. Bearings & Moving Parts</h3>
+<div class="collapsible-content">
+<ul>
+<li>Wheel hubs: adjust cone nuts, grease if needed</li>
+<li>Headset: smooth turning</li>
+<li>Pedals & bottom bracket: rotate smoothly, grease if stiff</li>
+</ul>
+</div>
+
+<h3 class="collapsible">6. Chain Maintenance</h3>
+<div class="collapsible-content">
+<ul>
+<li>Clean & degrease</li>
+<li>Lubricate lightly, wipe excess</li>
+<li>Check tension (~1–1.5 cm slack)</li>
+<li>Replace if stretched</li>
+</ul>
+</div>
+
+<h3 class="collapsible">7. Frame & Accessories Check</h3>
+<div class="collapsible-content">
+<ul>
+<li>Inspect frame for cracks/dents</li>
+<li>Tighten saddle, handlebars, rack, fenders, lights</li>
+<li>Check reflectors and bell</li>
+</ul>
+</div>
+
+<h3 class="collapsible">8. Routine Servicing Schedule</h3>
+<div class="collapsible-content">
+<table>
+<tr><th>Task</th><th>Frequency</th></tr>
+<tr><td>Clean frame & chain</td><td>Weekly / after muddy rides</td></tr>
+<tr><td>Check tire pressure</td><td>Every ride</td></tr>
+<tr><td>Lubricate chain & parts</td><td>Every 2–3 weeks</td></tr>
+<tr><td>Inspect brakes</td><td>Monthly</td></tr>
+<tr><td>Wheel alignment & bearings</td><td>Every 3–6 months</td></tr>
+<tr><td>Replace worn parts</td><td>As needed</td></tr>
+</table>
+</div>
+
+<h3 class="collapsible">9. DIY Repairs</h3>
+<div class="collapsible-content">
+<ul>
+<li>Flat tire → replace/patch</li>
+<li>Loose brakes → adjust cable tension</li>
+<li>Squeaky chain → clean & lube</li>
+<li>Wobbly wheels → adjust spokes slightly</li>
+<li>Loose pedals → tighten with wrench</li>
+</ul>
+</div>
+
+<h3 class="collapsible">10. Tools You Should Have</h3>
+<div class="collapsible-content">
+<ul>
+<li>Allen key set</li>
+<li>Adjustable wrench</li>
+<li>Tire levers</li>
+<li>Chain lubricant</li>
+<li>Degreaser & brushes</li>
+<li>Bike pump</li>
+<li>Spoke wrench (optional)</li>
+<li>Clean rags</li>
+</ul>
+</div>
+
 <script>
 let logs = JSON.parse(localStorage.getItem("bikeLogs")) || [];
 let editIndex = null;
@@ -164,17 +290,12 @@ function saveLogs() {
 function renderLogs() {
     const table = document.getElementById("logTable");
     table.innerHTML = "";
-
     logs.forEach((log, index) => {
         table.innerHTML += `
         <tr>
             <td>${log.date}</td>
             <td>${log.task}</td>
-            <td>
-                <button class="status-btn" onclick="toggleStatus(${index})">
-                    ${log.status}
-                </button>
-            </td>
+            <td><button class="status-btn" onclick="toggleStatus(${index})">${log.status}</button></td>
             <td>
                 <button class="edit-btn" onclick="editLog(${index})">Edit</button>
                 <button class="delete-btn" onclick="deleteLog(${index})">Delete</button>
@@ -185,7 +306,6 @@ function renderLogs() {
 
 document.getElementById("logForm").addEventListener("submit", function(e) {
     e.preventDefault();
-
     const date = document.getElementById("date").value;
     const task = document.getElementById("task").value;
 
@@ -203,8 +323,7 @@ document.getElementById("logForm").addEventListener("submit", function(e) {
 });
 
 function toggleStatus(index) {
-    logs[index].status =
-        logs[index].status === "Pending" ? "Completed" : "Pending";
+    logs[index].status = logs[index].status === "Pending" ? "Completed" : "Pending";
     saveLogs();
     renderLogs();
 }
@@ -222,7 +341,7 @@ function deleteLog(index) {
 }
 
 function clearLogs() {
-    if (confirm("Are you sure you want to clear all logs?")) {
+    if (confirm("Clear all logs?")) {
         logs = [];
         saveLogs();
         renderLogs();
@@ -234,14 +353,25 @@ function exportToExcel() {
     logs.forEach(log => {
         csv += `${log.date},${log.task},${log.status}\n`;
     });
-
     const blob = new Blob([csv], { type: "text/csv" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = "bike_maintenance_log.csv";
+    a.download = "bike_log.csv";
     a.click();
 }
+
+document.getElementById("toggleGuide").addEventListener("click", function() {
+    const card = document.getElementById("guideCard");
+    card.style.display = card.style.display === "none" ? "block" : "none";
+});
+
+document.querySelectorAll(".collapsible").forEach(item => {
+    item.addEventListener("click", () => {
+        const content = item.nextElementSibling;
+        content.style.display = content.style.display === "block" ? "none" : "block";
+    });
+});
 
 renderLogs();
 </script>
