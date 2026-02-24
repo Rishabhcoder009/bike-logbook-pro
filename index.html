@@ -1,55 +1,127 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
 <meta charset="UTF-8">
+<title>Bike Maintenance Logbook</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Bike Logbook Pro</title>
+
 <style>
-*{margin:0;padding:0;box-sizing:border-box;font-family:'Poppins',sans-serif;}
-body{background:#1c1c1c;color:#e0e0e0;padding:15px;}
-h1,h2,h3{color:#00aaff;}
-header{text-align:center;margin-bottom:15px;}
-.container{max-width:100%;margin:auto;}
-section{margin-bottom:20px;border:1px solid #333;padding:15px;border-radius:10px;background:#262626;}
-label{display:block;margin:5px 0;}
-input,textarea,select,button{width:100%;margin-bottom:10px;padding:10px;border-radius:5px;border:none;font-size:1em;}
-button{background-color:#00aaff;color:#fff;cursor:pointer;transition:0.2s;}
-button:hover{background-color:#0088cc;}
-table{width:100%;border-collapse:collapse;margin-top:10px;}
-th,td{border:1px solid #555;padding:8px;text-align:left;vertical-align:middle;font-size:0.9em;}
-th{background-color:#333;}
-.card{background:#262626;border:1px solid #444;border-radius:10px;padding:15px;margin-top:10px;max-height:70vh;overflow-y:auto;}
-.card h3{color:#00aaff;margin-top:10px;cursor:pointer;}
-.card ul,.card ol,.card table{margin-left:20px;margin-bottom:10px;font-size:0.9em;}
-.card button{width:auto;padding:8px 15px;margin-top:10px;font-size:0.9em;}
-img.thumb{max-width:50px;max-height:50px;border-radius:5px;display:block;margin-bottom:5px;cursor:pointer;}
-.completed-label{display:flex;align-items:center;gap:5px;font-size:0.9em;}
-.collapsible-content{display:none;padding:10px 0;}
-@media(max-width:600px){
-    h1{font-size:1.5em;}
-    h2{font-size:1.2em;}
-    input,textarea,select,button{font-size:0.95em;padding:8px;}
-    th,td{font-size:0.85em;padding:6px;}
-    img.thumb{max-width:40px;max-height:40px;}
-    .card{max-height:60vh;}
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:'Poppins',sans-serif;
 }
-.table-wrapper{overflow-x:auto;}
+
+body{
+background:#1c1c1c;
+color:#e0e0e0;
+padding:25px;
+}
+
+h1,h2{
+color:#00aaff;
+text-align:center;
+margin-bottom:20px;
+}
+
+.container{
+max-width:1000px;
+margin:auto;
+}
+
+section{
+margin-bottom:25px;
+border:1px solid #333;
+padding:20px;
+border-radius:12px;
+background:#262626;
+}
+
+label{
+display:block;
+margin:8px 0;
+}
+
+input,textarea,select,button{
+width:100%;
+margin-bottom:12px;
+padding:12px;
+border-radius:8px;
+border:none;
+font-size:1rem;
+}
+
+button{
+background-color:#00aaff;
+color:#fff;
+cursor:pointer;
+transition:0.2s;
+}
+
+button:hover{
+background-color:#0088cc;
+}
+
+.table-wrapper{
+overflow-x:auto;
+}
+
+table{
+width:100%;
+border-collapse:collapse;
+margin-top:15px;
+min-width:950px;
+}
+
+th,td{
+border:1px solid #555;
+padding:12px;
+text-align:left;
+vertical-align:middle;
+}
+
+th{
+background-color:#333;
+}
+
+.completed-label{
+display:flex;
+align-items:center;
+gap:8px;
+white-space:nowrap;
+}
+
+.deleteBtn{
+background:#ff4d4d;
+padding:8px 14px;
+border-radius:6px;
+}
+
+.deleteBtn:hover{
+background:#cc0000;
+}
+
+img.thumb{
+max-width:60px;
+max-height:60px;
+border-radius:6px;
+display:block;
+margin-bottom:6px;
+}
 </style>
 </head>
+
 <body>
 
-<header>
-<h1>Bike Logbook Pro</h1>
-<p>Track maintenance, cleaning, repairs, attach photos</p>
-</header>
+<h1>🏍 Bike Maintenance Logbook</h1>
 
 <div class="container">
 
-<!-- Log Form -->
 <section>
-<h2>Add New Log Entry</h2>
-<form id="logForm">
-<label for="date">Date:</label>
+<h2>Add Maintenance Entry</h2>
+
+<label>Date</label>
 <input type="date" id="date" required>
 
 <label for="task">Task:</label>
@@ -81,17 +153,20 @@ img.thumb{max-width:50px;max-height:50px;border-radius:5px;display:block;margin-
 <option value="Tighten loose pedals">DIY Repair - Tighten loose pedals</option>
 </select>
 
-<label for="notes">Notes:</label>
-<textarea id="notes" rows="3" placeholder="Add notes or issues..."></textarea>
-<label for="photo">Attach Photo (optional):</label>
+<label>Notes (Optional)</label>
+<textarea id="notes" placeholder="Additional details..."></textarea>
+
+<label>Photo</label>
 <input type="file" id="photo" accept="image/*">
-<button type="submit">Add Log Entry</button>
-</form>
+
+<button onclick="addEntry()">Add Entry</button>
+<button onclick="exportToCSV()">Export to Excel</button>
+
 </section>
 
-<!-- Log Table -->
 <section>
 <h2>Maintenance Log</h2>
+
 <div class="table-wrapper">
 <table id="logTable">
 <thead>
@@ -99,221 +174,133 @@ img.thumb{max-width:50px;max-height:50px;border-radius:5px;display:block;margin-
 <th>Date</th>
 <th>Task</th>
 <th>Notes</th>
-<th>Photo & Completed</th>
-<th>Action</th>
+<th>Photo</th>
+<th>Completed</th>
+<th>Delete</th>
 </tr>
 </thead>
 <tbody></tbody>
 </table>
 </div>
+
 </section>
 
-<!-- Guide -->
-<section>
-<h2>Maintenance & Repair Guide</h2>
-<button id="toggleGuide">Show Guide</button>
-<div class="card" id="guideCard" style="display:none;">
-
-<!-- Collapsible sections -->
-<div>
-<h3 class="collapsible">1. Safety First</h3>
-<div class="collapsible-content">
-<ul>
-<li>Clean, well-lit workspace</li>
-<li>Gloves to protect hands</li>
-<li>Rags or old towels</li>
-<li>Bicycle stand (optional)</li>
-<li>Lubricants, degreaser, and cleaning brushes</li>
-<li>Basic tools: wrenches, screwdrivers, tire levers, pump, chain tool</li>
-</ul>
 </div>
 
-<h3 class="collapsible">2. Cleaning Your Bicycle</h3>
-<div class="collapsible-content">
-<ol>
-<li><strong>Remove loose dirt</strong>: Use soft brush or cloth.</li>
-<li><strong>Wash frame & wheels</strong>: Mild soap + water, avoid high-pressure near bearings.</li>
-<li><strong>Clean chain & drivetrain</strong>: Degrease, brush, rinse lightly.</li>
-<li><strong>Dry thoroughly</strong>: Make sure chain, brakes, hubs are dry.</li>
-<li><strong>Lubricate</strong>: Chain lube sparingly, wipe excess, lubricate brake pivots, pedals, moving parts.</li>
-</ol>
-</div>
-
-<h3 class="collapsible">3. Tire & Wheel Maintenance</h3>
-<div class="collapsible-content">
-<ul>
-<li>Check air pressure (30–60 PSI)</li>
-<li>Inspect for damage (cuts, bulges, objects)</li>
-<li>Fix flat tires: Remove wheel, replace/patch tube, reinstall and inflate</li>
-<li>True wheels (if wobbling): Adjust spokes evenly</li>
-</ul>
-</div>
-
-<h3 class="collapsible">4. Brake System</h3>
-<div class="collapsible-content">
-<ul>
-<li>Check brake pads & cables</li>
-<li>Adjust: Loosen cable bolt, pull lever, re-tighten, pads square on rim</li>
-</ul>
-</div>
-
-<h3 class="collapsible">5. Bearings & Moving Parts</h3>
-<div class="collapsible-content">
-<ul>
-<li>Wheel hubs: adjust cone nuts, grease if needed</li>
-<li>Headset: smooth turning</li>
-<li>Pedals & bottom bracket: rotate smoothly, grease if stiff</li>
-</ul>
-</div>
-
-<h3 class="collapsible">6. Chain Maintenance</h3>
-<div class="collapsible-content">
-<ul>
-<li>Clean & degrease</li>
-<li>Lubricate lightly, wipe excess</li>
-<li>Check tension (~1–1.5 cm slack)</li>
-<li>Replace if stretched</li>
-</ul>
-</div>
-
-<h3 class="collapsible">7. Frame & Accessories Check</h3>
-<div class="collapsible-content">
-<ul>
-<li>Inspect frame for cracks/dents</li>
-<li>Tighten saddle, handlebars, rack, fenders, lights</li>
-<li>Check reflectors and bell</li>
-</ul>
-</div>
-
-<h3 class="collapsible">8. Routine Servicing Schedule</h3>
-<div class="collapsible-content">
-<table>
-<tr><th>Task</th><th>Frequency</th></tr>
-<tr><td>Clean frame & chain</td><td>Weekly / after muddy rides</td></tr>
-<tr><td>Check tire pressure</td><td>Every ride</td></tr>
-<tr><td>Lubricate chain & parts</td><td>Every 2–3 weeks</td></tr>
-<tr><td>Inspect brakes</td><td>Monthly</td></tr>
-<tr><td>Wheel alignment & bearings</td><td>Every 3–6 months</td></tr>
-<tr><td>Replace worn parts</td><td>As needed</td></tr>
-</table>
-</div>
-
-<h3 class="collapsible">9. DIY Repairs</h3>
-<div class="collapsible-content">
-<ul>
-<li>Flat tire → replace/patch</li>
-<li>Loose brakes → adjust cable tension</li>
-<li>Squeaky chain → clean & lube</li>
-<li>Wobbly wheels → adjust spokes slightly</li>
-<li>Loose pedals → tighten with wrench</li>
-</ul>
-</div>
-
-<h3 class="collapsible">10. Tools You Should Have</h3>
-<div class="collapsible-content">
-<ul>
-<li>Allen key set</li>
-<li>Adjustable wrench</li>
-<li>Tire levers</li>
-<li>Chain lubricant</li>
-<li>Degreaser & brushes</li>
-<li>Bike pump</li>
-<li>Spoke wrench (optional)</li>
-<li>Clean rags</li>
-</ul>
-</div>
-
-<button id="downloadPDF">Download PDF Checklist</button>
-</div>
-</section>
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script>
-const logTableBody=document.querySelector('#logTable tbody');
-const logForm=document.getElementById('logForm');
-let logs=JSON.parse(localStorage.getItem('bikeLogs'))||[];
 
-function renderLogs(){
-logTableBody.innerHTML='';
-logs.forEach((log,index)=>{
-const row=document.createElement('tr');
-row.innerHTML=`
-<td>${log.date}</td>
-<td>${log.task}</td>
-<td>${log.notes}</td>
-<td>
-${log.photo?`<img class="thumb" src="${log.photo}" onclick="window.open('${log.photo}','_blank')">`:''}
-<label class="completed-label"><input type="checkbox" data-index='${index}' ${log.completed?'checked':''}> Completed</label>
-</td>
-<td><button class="deleteBtn" data-index='${index}'>Delete</button></td>
-`;
-logTableBody.appendChild(row);
+document.addEventListener("DOMContentLoaded", loadEntries);
+
+function saveEntries(){
+const rows = document.querySelectorAll("#logTable tbody tr");
+let data = [];
+
+rows.forEach(row=>{
+data.push({
+date: row.cells[0].innerText,
+task: row.cells[1].innerText,
+notes: row.cells[2].innerText,
+photo: row.cells[3].querySelector("img")?.src || "",
+completed: row.cells[4].querySelector("input").checked
+});
+});
+
+localStorage.setItem("bikeLogData", JSON.stringify(data));
+}
+
+function loadEntries(){
+const data = JSON.parse(localStorage.getItem("bikeLogData")) || [];
+data.forEach(entry=>{
+createRow(entry.date, entry.task, entry.notes, entry.photo, entry.completed);
 });
 }
-renderLogs();
 
-logForm.addEventListener('submit',function(e){
-e.preventDefault();
-const date=document.getElementById('date').value;
-const task=document.getElementById('task').value;
-const notes=document.getElementById('notes').value;
-const photoInput=document.getElementById('photo');
+function addEntry(){
+const date = document.getElementById("date").value;
+const task = document.getElementById("task").value;
+const notes = document.getElementById("notes").value;
+const photoInput = document.getElementById("photo");
+
+if(!date){
+alert("Please select a date.");
+return;
+}
+
 if(photoInput.files[0]){
-const reader=new FileReader();
-reader.onload=function(event){ addLog(date,task,notes,event.target.result); }
+const reader = new FileReader();
+reader.onload = function(e){
+createRow(date, task, notes, e.target.result, false);
+saveEntries();
+};
 reader.readAsDataURL(photoInput.files[0]);
-} else addLog(date,task,notes,'');
-});
-
-function addLog(date,task,notes,photo){
-logs.push({date,task,notes,photo,completed:false});
-localStorage.setItem('bikeLogs',JSON.stringify(logs));
-logForm.reset();
-renderLogs();
+}else{
+createRow(date, task, notes, "", false);
+saveEntries();
 }
 
-logTableBody.addEventListener('change',function(e){
-if(e.target.type==='checkbox'){
-const index=e.target.dataset.index;
-logs[index].completed=e.target.checked;
-localStorage.setItem('bikeLogs',JSON.stringify(logs));
-renderLogs();
+document.getElementById("date").value="";
+document.getElementById("notes").value="";
+document.getElementById("photo").value="";
 }
-});
 
-logTableBody.addEventListener('click',function(e){
-if(e.target.classList.contains('deleteBtn')){
-const index=e.target.dataset.index;
-logs.splice(index,1);
-localStorage.setItem('bikeLogs',JSON.stringify(logs));
-renderLogs();
+function createRow(date, task, notes, photo, completed){
+const table = document.querySelector("#logTable tbody");
+const row = table.insertRow();
+
+row.insertCell(0).innerText = date;
+row.insertCell(1).innerText = task;
+row.insertCell(2).innerText = notes;
+
+const photoCell = row.insertCell(3);
+if(photo){
+const img = document.createElement("img");
+img.src = photo;
+img.className="thumb";
+photoCell.appendChild(img);
+}else{
+photoCell.innerText="No photo";
 }
+
+const completedCell = row.insertCell(4);
+const label = document.createElement("label");
+label.className="completed-label";
+
+const checkbox = document.createElement("input");
+checkbox.type="checkbox";
+checkbox.checked=completed;
+checkbox.onchange=saveEntries;
+
+label.appendChild(checkbox);
+label.appendChild(document.createTextNode("Completed"));
+completedCell.appendChild(label);
+
+const deleteCell = row.insertCell(5);
+const deleteBtn = document.createElement("button");
+deleteBtn.innerText="Delete";
+deleteBtn.className="deleteBtn";
+deleteBtn.onclick=function(){
+row.remove();
+saveEntries();
+};
+deleteCell.appendChild(deleteBtn);
+}
+
+function exportToCSV(){
+const data = JSON.parse(localStorage.getItem("bikeLogData")) || [];
+let csv="Date,Task,Notes,Completed\n";
+
+data.forEach(entry=>{
+csv+=`${entry.date},"${entry.task}","${entry.notes}",${entry.completed?"Yes":"No"}\n`;
 });
 
-const toggleBtn=document.getElementById('toggleGuide');
-const guideCard=document.getElementById('guideCard');
-toggleBtn.addEventListener('click',()=>{
-if(guideCard.style.display==='none'){ guideCard.style.display='block'; toggleBtn.textContent='Hide Guide'; }
-else{ guideCard.style.display='none'; toggleBtn.textContent='Show Guide'; }
-});
+const blob=new Blob([csv],{type:"text/csv"});
+const link=document.createElement("a");
+link.href=URL.createObjectURL(blob);
+link.download="bike-maintenance-backup.csv";
+link.click();
+}
 
-// Collapsible functionality
-const collapsibles=document.querySelectorAll('.collapsible');
-collapsibles.forEach(item=>{
-item.addEventListener('click',()=>{
-const content=item.nextElementSibling;
-content.style.display=content.style.display==='block'?'none':'block';
-});
-});
-
-document.getElementById('downloadPDF').addEventListener('click',()=>{
-const { jsPDF }=window.jspdf;
-const doc=new jsPDF();
-const guide=document.querySelector('.card').innerText;
-const lines=doc.splitTextToSize(guide,180);
-doc.text(lines,10,10);
-doc.save('Bicycle_Maintenance_Checklist.pdf');
-});
 </script>
+
 </body>
 </html>
