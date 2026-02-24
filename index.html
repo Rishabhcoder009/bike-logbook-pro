@@ -3,123 +3,102 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bicycle Maintenance Log</title>
 
-<title>BikeCare - Maintenance Tracker</title>
-
-<!-- PWA Support -->
+<!-- PWA / iPad App Support -->
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="BikeCare">
-<meta name="theme-color" content="#2d6cdf">
-
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<meta name="theme-color" content="#121212">
 
 <style>
 body {
-  font-family: Arial, sans-serif;
-  margin: 0;
-  background: #f4f6f9;
+    font-family: Arial, sans-serif;
+    background: #121212;
+    color: #ffffff;
+    margin: 20px;
 }
 
-header {
-  background: #2d6cdf;
-  color: white;
-  padding: 15px;
-  text-align: center;
-  font-size: 22px;
-  font-weight: bold;
-}
-
-.container {
-  padding: 15px;
-  max-width: 900px;
-  margin: auto;
+h1 {
+    text-align: center;
 }
 
 form {
-  background: white;
-  padding: 15px;
-  border-radius: 10px;
-  margin-bottom: 20px;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    background: #1e1e1e;
+    padding: 15px;
+    border-radius: 10px;
+    margin-bottom: 20px;
 }
 
 label {
-  display: block;
-  margin-top: 10px;
-  font-weight: bold;
+    display: block;
+    margin-top: 10px;
 }
 
-input, select {
-  width: 100%;
-  padding: 10px;
-  margin-top: 5px;
-  border-radius: 6px;
-  border: 1px solid #ccc;
+select, input {
+    width: 100%;
+    padding: 8px;
+    margin-top: 5px;
+    border-radius: 5px;
+    border: none;
 }
 
 button {
-  margin-top: 15px;
-  padding: 10px;
-  width: 100%;
-  border: none;
-  border-radius: 6px;
-  background: #2d6cdf;
-  color: white;
-  font-size: 16px;
-  cursor: pointer;
+    margin-top: 10px;
+    padding: 8px 12px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
 }
 
-button:hover {
-  background: #1f4fa3;
+.add-btn { background: #2d6cdf; color: white; }
+.export-btn { background: #28a745; color: white; }
+.clear-btn { background: #dc3545; color: white; }
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #1e1e1e;
+    border-radius: 10px;
+    overflow: hidden;
 }
 
-.log-entry {
-  background: white;
-  padding: 15px;
-  margin-bottom: 10px;
-  border-radius: 10px;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+th, td {
+    padding: 10px;
+    text-align: center;
 }
 
-.log-top {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
+th {
+    background: #2d6cdf;
 }
 
-.badge {
-  background: green;
-  color: white;
-  padding: 4px 8px;
-  border-radius: 5px;
-  font-size: 12px;
-  margin-right: 10px;
+tr:nth-child(even) {
+    background: #2a2a2a;
+}
+
+.status-btn {
+    background: #ff9800;
+    color: white;
+}
+
+.edit-btn {
+    background: #17a2b8;
+    color: white;
 }
 
 .delete-btn {
-  background: red;
-  padding: 6px 10px;
-  font-size: 14px;
-}
-
-canvas {
-  background: white;
-  padding: 15px;
-  border-radius: 10px;
-  margin-top: 20px;
+    background: #dc3545;
+    color: white;
 }
 </style>
 </head>
 
 <body>
 
-<header>🚴 BikeCare - Maintenance Tracker</header>
-
-<div class="container">
+<h1>Bicycle Maintenance Log</h1>
 
 <form id="logForm">
 <label>Date:</label>
@@ -154,87 +133,114 @@ canvas {
 <option value="Tighten loose pedals">DIY - Tighten loose pedals</option>
 </select>
 
-<button type="submit">Add Log Entry</button>
+<button type="submit" class="add-btn">Add Log</button>
 </form>
 
-<h3>Maintenance Log</h3>
-<div id="logList"></div>
+<button onclick="exportToExcel()" class="export-btn">Export to Excel</button>
+<button onclick="clearLogs()" class="clear-btn">Clear All Logs</button>
 
-<h3>Maintenance Statistics</h3>
-<canvas id="taskChart"></canvas>
+<br><br>
 
-</div>
+<table>
+<thead>
+<tr>
+<th>Date</th>
+<th>Task</th>
+<th>Status</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody id="logTable"></tbody>
+</table>
 
 <script>
 let logs = JSON.parse(localStorage.getItem("bikeLogs")) || [];
+let editIndex = null;
 
 function saveLogs() {
-  localStorage.setItem("bikeLogs", JSON.stringify(logs));
+    localStorage.setItem("bikeLogs", JSON.stringify(logs));
 }
 
 function renderLogs() {
-  const logList = document.getElementById("logList");
-  logList.innerHTML = "";
+    const table = document.getElementById("logTable");
+    table.innerHTML = "";
 
-  logs.forEach((log, index) => {
-    logList.innerHTML += `
-      <div class="log-entry">
-        <div class="log-top">
-          <div>
-            <span class="badge">Completed</span>
-            ${log.task}
-          </div>
-          <button class="delete-btn" onclick="deleteLog(${index})">Delete</button>
-        </div>
-        <div style="margin-top:8px;">Date: ${log.date}</div>
-      </div>
-    `;
-  });
-
-  updateChart();
-}
-
-function deleteLog(index) {
-  logs.splice(index, 1);
-  saveLogs();
-  renderLogs();
+    logs.forEach((log, index) => {
+        table.innerHTML += `
+        <tr>
+            <td>${log.date}</td>
+            <td>${log.task}</td>
+            <td>
+                <button class="status-btn" onclick="toggleStatus(${index})">
+                    ${log.status}
+                </button>
+            </td>
+            <td>
+                <button class="edit-btn" onclick="editLog(${index})">Edit</button>
+                <button class="delete-btn" onclick="deleteLog(${index})">Delete</button>
+            </td>
+        </tr>`;
+    });
 }
 
 document.getElementById("logForm").addEventListener("submit", function(e) {
-  e.preventDefault();
+    e.preventDefault();
 
-  const date = document.getElementById("date").value;
-  const task = document.getElementById("task").value;
+    const date = document.getElementById("date").value;
+    const task = document.getElementById("task").value;
 
-  logs.push({ date, task });
-  saveLogs();
-  renderLogs();
-  this.reset();
+    if (editIndex === null) {
+        logs.push({ date, task, status: "Pending" });
+    } else {
+        logs[editIndex].date = date;
+        logs[editIndex].task = task;
+        editIndex = null;
+    }
+
+    saveLogs();
+    renderLogs();
+    this.reset();
 });
 
-let chart;
+function toggleStatus(index) {
+    logs[index].status =
+        logs[index].status === "Pending" ? "Completed" : "Pending";
+    saveLogs();
+    renderLogs();
+}
 
-function updateChart() {
-  const counts = {};
-  logs.forEach(log => {
-    counts[log.task] = (counts[log.task] || 0) + 1;
-  });
+function editLog(index) {
+    document.getElementById("date").value = logs[index].date;
+    document.getElementById("task").value = logs[index].task;
+    editIndex = index;
+}
 
-  const labels = Object.keys(counts);
-  const data = Object.values(counts);
+function deleteLog(index) {
+    logs.splice(index, 1);
+    saveLogs();
+    renderLogs();
+}
 
-  if (chart) chart.destroy();
-
-  chart = new Chart(document.getElementById("taskChart"), {
-    type: "bar",
-    data: {
-      labels: labels,
-      datasets: [{
-        label: "Times Completed",
-        data: data
-      }]
+function clearLogs() {
+    if (confirm("Are you sure you want to clear all logs?")) {
+        logs = [];
+        saveLogs();
+        renderLogs();
     }
-  });
+}
+
+function exportToExcel() {
+    let csv = "Date,Task,Status\n";
+    logs.forEach(log => {
+        csv += `${log.date},${log.task},${log.status}\n`;
+    });
+
+    const blob = new Blob([csv], { type: "text/csv" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "bike_maintenance_log.csv";
+    a.click();
 }
 
 renderLogs();
