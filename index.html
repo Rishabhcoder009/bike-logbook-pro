@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <title>BikeCare</title>
 
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 
 <!-- PWA Support -->
 <link rel="manifest" href="manifest.json">
@@ -28,6 +28,7 @@ html, body {
 
 .container {
   max-width: 520px;
+  width: 100%;
   margin: auto;
   padding: 20px;
   padding-top: calc(20px + env(safe-area-inset-top));
@@ -35,22 +36,24 @@ html, body {
 }
 
 h1 {
-  font-size: 24px;
+  font-size: 22px;
   margin-bottom: 20px;
 }
 
 .card {
   background: #0b0f14;
-  padding: 18px;
+  padding: 16px;
   border-radius: 20px;
   margin-bottom: 20px;
   border: 1px solid #111;
   overflow: hidden;
+  width: 100%;
 }
 
+/* Tabs */
 .tabs {
   display: flex;
-  gap: 10px;
+  gap: 8px;
   margin-bottom: 20px;
 }
 
@@ -70,6 +73,7 @@ h1 {
   box-shadow: 0 0 20px rgba(45,108,223,0.7);
 }
 
+/* Inputs */
 input {
   width: 100%;
   padding: 12px;
@@ -78,6 +82,7 @@ input {
   background: #121821;
   color: white;
   margin-bottom: 12px;
+  font-size: 16px;
 }
 
 button.primary {
@@ -88,23 +93,36 @@ button.primary {
   background: #2d6cdf;
   color: white;
   font-weight: 600;
+  margin-bottom: 10px;
+}
+
+/* Table Fix */
+.table-wrapper {
+  width: 100%;
+  overflow-x: auto;
 }
 
 table {
   width: 100%;
   border-collapse: collapse;
-  margin-top: 10px;
   font-size: 13px;
+  table-layout: fixed;
 }
 
 th, td {
-  padding: 10px 6px;
+  padding: 8px 6px;
   border-bottom: 1px solid #111;
   text-align: left;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 
-/* Dashboard */
+th:nth-child(1), td:nth-child(1) { width: 28%; }
+th:nth-child(2), td:nth-child(2) { width: 42%; }
+th:nth-child(3), td:nth-child(3) { width: 20%; }
+th:nth-child(4), td:nth-child(4) { width: 10%; }
 
+/* Dashboard */
 .stat {
   background: #0a0f14;
   border-radius: 18px;
@@ -116,7 +134,7 @@ th, td {
 
 .stat-row {
   display: flex;
-  gap: 10px;
+  gap: 8px;
 }
 
 .stat.small { flex: 1; }
@@ -133,30 +151,19 @@ th, td {
 }
 
 .main-stat .value {
-  font-size: 42px;
+  font-size: 36px;
 }
 
-/* Neon total */
+/* Neon */
 .neon {
   color: #2d6cdf;
   text-shadow:
     0 0 6px #2d6cdf,
     0 0 14px #2d6cdf,
-    0 0 35px rgba(45,108,223,0.8);
-  animation: pulse 2.5s infinite alternate;
+    0 0 30px rgba(45,108,223,0.8);
 }
 
-@keyframes pulse {
-  from { text-shadow: 0 0 10px #2d6cdf; }
-  to { text-shadow: 0 0 35px #2d6cdf; }
-}
-
-.divider {
-  height: 1px;
-  margin: 25px 0;
-  background: linear-gradient(90deg, transparent, #2d6cdf, transparent);
-}
-
+/* PB Highlight */
 .pb-highlight {
   background: linear-gradient(90deg, #1a1400, #000);
 }
@@ -164,6 +171,7 @@ th, td {
 .pb-badge {
   color: gold;
   font-weight: bold;
+  margin-left: 5px;
 }
 </style>
 </head>
@@ -184,12 +192,14 @@ th, td {
 <input type="text" id="task" placeholder="Task">
 <button class="primary" onclick="addLog()">Add Entry</button>
 
+<div class="table-wrapper">
 <table>
 <thead>
 <tr><th>Date</th><th>Task</th><th></th></tr>
 </thead>
 <tbody id="logTable"></tbody>
 </table>
+</div>
 </div>
 
 <!-- Distance -->
@@ -205,26 +215,25 @@ th, td {
 <div class="label">THIS WEEK</div>
 <div id="weeklyKm" class="value">0 km</div>
 </div>
-
 <div class="stat small">
 <div class="label">THIS MONTH</div>
 <div id="monthlyKm" class="value">0 km</div>
 </div>
 </div>
 
-<div class="divider"></div>
-
 <input type="date" id="distDate">
-<input type="text" id="route" placeholder="Route (HOM - GGC - HOM)">
+<input type="text" id="route" placeholder="HOM - GGC - HOM">
 <input type="number" id="distance" placeholder="Distance (km)">
 <button class="primary" onclick="addDistance()">Add Entry</button>
 
+<div class="table-wrapper">
 <table>
 <thead>
 <tr><th>Date</th><th>Route</th><th>KM</th><th></th></tr>
 </thead>
 <tbody id="distanceTable"></tbody>
 </table>
+</div>
 
 </div>
 </div>
@@ -272,13 +281,11 @@ function renderDistance(){
   distanceTable.innerHTML="";
   let total=0, weekly=0, monthly=0, pb=0;
   const now=new Date();
-  const week=getWeekNumber(now);
   distanceLogs.forEach(log=>{
     total+=log.distance;
     if(log.distance>pb) pb=log.distance;
     const d=new Date(log.date);
-    if(getWeekNumber(d)===week && d.getFullYear()===now.getFullYear()) weekly+=log.distance;
-    if(d.getMonth()===now.getMonth() && d.getFullYear()===now.getFullYear()) monthly+=log.distance;
+    if(d.getMonth()===now.getMonth()) monthly+=log.distance;
   });
   distanceLogs.forEach((log,i)=>{
     const isPB=log.distance===pb;
@@ -291,15 +298,8 @@ function renderDistance(){
       </tr>`;
   });
   totalKm.innerText=total.toFixed(1);
-  weeklyKm.innerText=weekly.toFixed(1)+" km";
+  weeklyKm.innerText="Auto";
   monthlyKm.innerText=monthly.toFixed(1)+" km";
-}
-function getWeekNumber(d){
-  const date=new Date(Date.UTC(d.getFullYear(),d.getMonth(),d.getDate()));
-  const dayNum=date.getUTCDay()||7;
-  date.setUTCDate(date.getUTCDate()+4-dayNum);
-  const yearStart=new Date(Date.UTC(date.getUTCFullYear(),0,1));
-  return Math.ceil((((date-yearStart)/86400000)+1)/7);
 }
 renderDistance();
 </script>
