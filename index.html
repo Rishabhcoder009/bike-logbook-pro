@@ -1,19 +1,29 @@
-<!DOCTYPE html>
-<html>
 <head>
 <meta charset="UTF-8">
 <title>BikeCare</title>
+
+<!-- Viewport -->
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<style>
-* {
-  box-sizing: border-box;
-}
+<!-- PWA Support -->
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon.png">
 
-body {
+<meta name="theme-color" content="#000000">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="BikeCare">
+
+<style>
+/* Your full CSS starts below this line */
+* { box-sizing: border-box; }
+
+html, body {
   margin: 0;
+  padding: 0;
+  overflow-x: hidden;
   font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-  background: #0b0f14;
+  background: #000;
   color: #f5f5f5;
 }
 
@@ -21,6 +31,8 @@ body {
   max-width: 520px;
   margin: auto;
   padding: 20px;
+  padding-top: calc(20px + env(safe-area-inset-top));
+  padding-bottom: calc(20px + env(safe-area-inset-bottom));
 }
 
 h1 {
@@ -30,12 +42,19 @@ h1 {
   margin-bottom: 20px;
 }
 
+/* CARD */
 .card {
-  background: #11161d;
+  background: #0b0f14;
   padding: 18px;
-  border-radius: 16px;
+  border-radius: 20px;
   margin-bottom: 20px;
-  box-shadow: 0 0 20px rgba(0,120,255,0.06);
+  border: 1px solid #111;
+  overflow: hidden;
+  box-shadow:
+    0 0 25px rgba(45,108,223,0.08),
+    inset 0 0 15px rgba(45,108,223,0.03);
+  backdrop-filter: blur(10px);
+  transition: 0.3s ease;
 }
 
 .tabs {
@@ -46,43 +65,50 @@ h1 {
 
 .tabs button {
   flex: 1;
-  padding: 10px;
-  border-radius: 10px;
+  padding: 12px;
+  border-radius: 14px;
   border: none;
-  background: #161c24;
-  color: #888;
+  background: #111;
+  color: #666;
   font-weight: 600;
+  transition: 0.2s;
 }
 
 .tabs button.active {
   background: #2d6cdf;
   color: white;
+  box-shadow: 0 0 20px rgba(45,108,223,0.7);
 }
 
 input {
   width: 100%;
-  padding: 10px;
-  border-radius: 8px;
-  border: 1px solid #222b36;
-  background: #161c24;
+  padding: 12px;
+  border-radius: 12px;
+  border: 1px solid #1a1f27;
+  background: #121821;
   color: white;
-  margin-bottom: 10px;
+  margin-bottom: 12px;
   font-size: 14px;
+}
+
+input:focus {
+  outline: none;
+  border-color: #2d6cdf;
+  box-shadow: 0 0 12px rgba(45,108,223,0.6);
 }
 
 button.primary {
   width: 100%;
-  padding: 10px;
-  border-radius: 8px;
+  padding: 12px;
+  border-radius: 12px;
   border: none;
   background: #2d6cdf;
   color: white;
   font-weight: 600;
-  letter-spacing: 0.5px;
 }
 
 button.primary:hover {
-  opacity: 0.9;
+  box-shadow: 0 0 25px rgba(45,108,223,0.9);
 }
 
 table {
@@ -93,23 +119,22 @@ table {
 }
 
 th, td {
-  padding: 8px;
-  border-bottom: 1px solid #222b36;
+  padding: 10px 6px;
+  border-bottom: 1px solid #111;
   text-align: left;
 }
 
 /* DASHBOARD */
 
-.dashboard {
-  margin-bottom: 15px;
-}
+.dashboard { margin-bottom: 15px; }
 
 .stat {
-  background: #0f141b;
-  border-radius: 14px;
-  padding: 15px;
-  margin-bottom: 10px;
+  background: #0a0f14;
+  border-radius: 18px;
+  padding: 16px;
+  margin-bottom: 12px;
   text-align: center;
+  border: 1px solid #111;
 }
 
 .stat-row {
@@ -117,9 +142,7 @@ th, td {
   gap: 10px;
 }
 
-.stat.small {
-  flex: 1;
-}
+.stat.small { flex: 1; }
 
 .label {
   font-size: 11px;
@@ -134,15 +157,61 @@ th, td {
 }
 
 .main-stat .value {
-  font-size: 38px;
+  font-size: 42px;
 }
 
+/* Neon TOTAL KM */
 .neon {
   color: #2d6cdf;
   text-shadow:
-    0 0 5px #2d6cdf,
-    0 0 12px #2d6cdf,
-    0 0 25px rgba(45,108,223,0.6);
+    0 0 6px #2d6cdf,
+    0 0 14px #2d6cdf,
+    0 0 35px rgba(45,108,223,0.8);
+  animation: pulseGlow 2.5s infinite alternate;
+}
+
+@keyframes pulseGlow {
+  from {
+    text-shadow:
+      0 0 6px #2d6cdf,
+      0 0 14px #2d6cdf,
+      0 0 25px rgba(45,108,223,0.5);
+  }
+  to {
+    text-shadow:
+      0 0 10px #2d6cdf,
+      0 0 25px #2d6cdf,
+      0 0 45px rgba(45,108,223,1);
+  }
+}
+
+/* Divider */
+.divider {
+  height: 1px;
+  margin: 25px 0;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    #2d6cdf,
+    transparent
+  );
+}
+
+/* Personal Best */
+.pb-highlight {
+  background: linear-gradient(90deg, #1a1400, #000);
+  box-shadow:
+    0 0 15px rgba(255,215,0,0.4),
+    inset 0 0 10px rgba(255,215,0,0.2);
+}
+
+.pb-badge {
+  color: gold;
+  font-weight: 700;
+  text-shadow:
+    0 0 6px gold,
+    0 0 18px rgba(255,215,0,0.8),
+    0 0 30px rgba(255,215,0,0.6);
 }
 </style>
 </head>
@@ -183,29 +252,29 @@ th, td {
 
 <div class="dashboard">
 
-  <div class="stat main-stat">
-    <div class="label">TOTAL KM</div>
-    <div id="totalKm" class="value neon">0</div>
-  </div>
+<div class="stat main-stat">
+<div class="label">TOTAL KM</div>
+<div id="totalKm" class="value neon">0</div>
+</div>
 
-  <div class="stat-row">
-    <div class="stat small">
-      <div class="label">THIS WEEK</div>
-      <div id="weeklyKm" class="value">0 km</div>
-    </div>
+<div class="stat-row">
+<div class="stat small">
+<div class="label">THIS WEEK</div>
+<div id="weeklyKm" class="value">0 km</div>
+</div>
 
-    <div class="stat small">
-      <div class="label">THIS MONTH</div>
-      <div id="monthlyKm" class="value">0 km</div>
-    </div>
-  </div>
+<div class="stat small">
+<div class="label">THIS MONTH</div>
+<div id="monthlyKm" class="value">0 km</div>
+</div>
+</div>
 
 </div>
 
-<hr style="border:1px solid #1b222c; margin:20px 0;">
+<div class="divider"></div>
 
 <input type="date" id="distDate">
-<input type="text" id="route" placeholder="Route">
+<input type="text" id="route" placeholder="Route (HOM - GGC - HOM)">
 <input type="number" id="distance" placeholder="Distance (km)">
 <input type="text" id="distNotes" placeholder="Notes (optional)">
 <button class="primary" onclick="addDistance()">Add Entry</button>
@@ -228,7 +297,7 @@ th, td {
 
 <script>
 
-// Auto date
+/* AUTO DATE */
 document.getElementById("date").valueAsDate = new Date();
 document.getElementById("distDate").valueAsDate = new Date();
 
@@ -321,9 +390,7 @@ function renderDistance() {
   const table = document.getElementById("distanceTable");
   table.innerHTML = "";
 
-  let total = 0;
-  let weekly = 0;
-  let monthly = 0;
+  let total = 0, weekly = 0, monthly = 0, personalBest = 0;
 
   const now = new Date();
   const currentWeek = getWeekNumber(now);
@@ -332,29 +399,32 @@ function renderDistance() {
 
   distanceLogs.sort((a,b)=> new Date(b.date) - new Date(a.date));
 
-  distanceLogs.forEach((log,i)=>{
-    const logDate = new Date(log.date);
+  distanceLogs.forEach(log=>{
     total += log.distance;
+    if (log.distance > personalBest) personalBest = log.distance;
 
-    if (
-      getWeekNumber(logDate) === currentWeek &&
-      logDate.getFullYear() === currentYear
-    ) {
+    const logDate = new Date(log.date);
+
+    if (getWeekNumber(logDate) === currentWeek &&
+        logDate.getFullYear() === currentYear)
       weekly += log.distance;
-    }
 
-    if (
-      logDate.getMonth() === currentMonth &&
-      logDate.getFullYear() === currentYear
-    ) {
+    if (logDate.getMonth() === currentMonth &&
+        logDate.getFullYear() === currentYear)
       monthly += log.distance;
-    }
+  });
+
+  distanceLogs.forEach((log,i)=>{
+    const isPB = log.distance === personalBest;
 
     table.innerHTML += `
-      <tr>
+      <tr class="${isPB ? 'pb-highlight' : ''}">
         <td>${log.date}</td>
         <td>${log.route}</td>
-        <td>${log.distance}</td>
+        <td>
+          ${log.distance}
+          ${isPB ? '<span class="pb-badge"> PB</span>' : ''}
+        </td>
         <td><button onclick="deleteDistance(${i})">✕</button></td>
       </tr>`;
   });
