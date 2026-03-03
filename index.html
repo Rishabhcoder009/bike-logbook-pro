@@ -6,12 +6,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
-* { box-sizing: border-box; }
+* {
+  box-sizing: border-box;
+}
 
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-  background: #000; /* TRUE OLED BLACK */
+  background: #0b0f14;
   color: #f5f5f5;
 }
 
@@ -29,11 +31,11 @@ h1 {
 }
 
 .card {
-  background: #0b0b0b;
+  background: #11161d;
   padding: 18px;
-  border-radius: 18px;
+  border-radius: 16px;
   margin-bottom: 20px;
-  border: 1px solid #111;
+  box-shadow: 0 0 20px rgba(0,120,255,0.06);
 }
 
 .tabs {
@@ -45,24 +47,24 @@ h1 {
 .tabs button {
   flex: 1;
   padding: 10px;
-  border-radius: 12px;
+  border-radius: 10px;
   border: none;
-  background: #111;
-  color: #666;
+  background: #161c24;
+  color: #888;
   font-weight: 600;
 }
 
 .tabs button.active {
-  background: #1a1a1a;
-  color: #2d6cdf;
+  background: #2d6cdf;
+  color: white;
 }
 
 input {
   width: 100%;
   padding: 10px;
-  border-radius: 10px;
-  border: 1px solid #111;
-  background: #0f0f0f;
+  border-radius: 8px;
+  border: 1px solid #222b36;
+  background: #161c24;
   color: white;
   margin-bottom: 10px;
   font-size: 14px;
@@ -71,11 +73,16 @@ input {
 button.primary {
   width: 100%;
   padding: 10px;
-  border-radius: 10px;
+  border-radius: 8px;
   border: none;
   background: #2d6cdf;
   color: white;
   font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+button.primary:hover {
+  opacity: 0.9;
 }
 
 table {
@@ -87,21 +94,22 @@ table {
 
 th, td {
   padding: 8px;
-  border-bottom: 1px solid #111;
+  border-bottom: 1px solid #222b36;
   text-align: left;
 }
 
 /* DASHBOARD */
 
-.dashboard { margin-bottom: 15px; }
+.dashboard {
+  margin-bottom: 15px;
+}
 
 .stat {
-  background: #050505;
-  border-radius: 16px;
+  background: #0f141b;
+  border-radius: 14px;
   padding: 15px;
-  margin-bottom: 12px;
+  margin-bottom: 10px;
   text-align: center;
-  border: 1px solid #111;
 }
 
 .stat-row {
@@ -109,39 +117,32 @@ th, td {
   gap: 10px;
 }
 
-.stat.small { flex: 1; }
+.stat.small {
+  flex: 1;
+}
 
 .label {
   font-size: 11px;
-  color: #555;
+  color: #666;
   letter-spacing: 1px;
   margin-bottom: 5px;
 }
 
-.value { font-size: 18px; font-weight: 600; }
+.value {
+  font-size: 18px;
+  font-weight: 600;
+}
 
-.main-stat .value { font-size: 40px; }
+.main-stat .value {
+  font-size: 38px;
+}
 
 .neon {
   color: #2d6cdf;
   text-shadow:
-    0 0 6px #2d6cdf,
-    0 0 14px #2d6cdf,
-    0 0 28px rgba(45,108,223,0.7);
-}
-
-/* PERSONAL BEST */
-
-.pb-highlight {
-  background: linear-gradient(90deg, #1a1400, #000);
-}
-
-.pb-badge {
-  color: gold;
-  font-weight: 700;
-  text-shadow:
-    0 0 6px gold,
-    0 0 12px rgba(255,215,0,0.7);
+    0 0 5px #2d6cdf,
+    0 0 12px #2d6cdf,
+    0 0 25px rgba(45,108,223,0.6);
 }
 </style>
 </head>
@@ -201,6 +202,8 @@ th, td {
 
 </div>
 
+<hr style="border:1px solid #1b222c; margin:20px 0;">
+
 <input type="date" id="distDate">
 <input type="text" id="route" placeholder="Route">
 <input type="number" id="distance" placeholder="Distance (km)">
@@ -225,18 +228,23 @@ th, td {
 
 <script>
 
-// AUTO DATE
+// Auto date
 document.getElementById("date").valueAsDate = new Date();
 document.getElementById("distDate").valueAsDate = new Date();
 
 function showTab(tab) {
-  maintenanceTab.style.display = tab === "maintenance" ? "block" : "none";
-  distanceTab.style.display = tab === "distance" ? "block" : "none";
-  tab1.classList.toggle("active", tab === "maintenance");
-  tab2.classList.toggle("active", tab === "distance");
+  document.getElementById("maintenanceTab").style.display =
+    tab === "maintenance" ? "block" : "none";
+
+  document.getElementById("distanceTab").style.display =
+    tab === "distance" ? "block" : "none";
+
+  document.getElementById("tab1").classList.toggle("active", tab === "maintenance");
+  document.getElementById("tab2").classList.toggle("active", tab === "distance");
 }
 
 /* Maintenance */
+
 let logs = JSON.parse(localStorage.getItem("logs")) || [];
 
 function saveLogs() {
@@ -244,24 +252,30 @@ function saveLogs() {
 }
 
 function addLog() {
-  if (!date.value || !task.value) return;
-  logs.push({ date: date.value, task: task.value });
+  const dateVal = document.getElementById("date").value;
+  const taskVal = document.getElementById("task").value;
+  if (!dateVal || !taskVal) return;
+
+  logs.push({ date: dateVal, task: taskVal });
   saveLogs();
   renderLogs();
-  task.value = "";
+  document.getElementById("task").value = "";
 }
 
 function deleteLog(i) {
-  logs.splice(i,1);
+  logs.splice(i, 1);
   saveLogs();
   renderLogs();
 }
 
 function renderLogs() {
-  logTable.innerHTML = "";
-  logs.sort((a,b)=> new Date(b.date)-new Date(a.date));
+  const table = document.getElementById("logTable");
+  table.innerHTML = "";
+
+  logs.sort((a,b)=> new Date(b.date) - new Date(a.date));
+
   logs.forEach((log,i)=>{
-    logTable.innerHTML += `
+    table.innerHTML += `
       <tr>
         <td>${log.date}</td>
         <td>${log.task}</td>
@@ -269,6 +283,7 @@ function renderLogs() {
       </tr>`;
   });
 }
+
 renderLogs();
 
 /* Distance */
@@ -280,74 +295,73 @@ function saveDistance() {
 }
 
 function addDistance() {
-  if (!distDate.value || !route.value || !distance.value) return;
+  const dateVal = document.getElementById("distDate").value;
+  const routeVal = document.getElementById("route").value;
+  const distVal = parseFloat(document.getElementById("distance").value);
+  const notesVal = document.getElementById("distNotes").value;
 
-  distanceLogs.push({
-    date: distDate.value,
-    route: route.value,
-    distance: parseFloat(distance.value),
-    notes: distNotes.value
-  });
+  if (!dateVal || !routeVal || !distVal) return;
 
+  distanceLogs.push({ date: dateVal, route: routeVal, distance: distVal, notes: notesVal });
   saveDistance();
   renderDistance();
 
-  route.value = "";
-  distance.value = "";
-  distNotes.value = "";
+  document.getElementById("route").value = "";
+  document.getElementById("distance").value = "";
+  document.getElementById("distNotes").value = "";
 }
 
 function deleteDistance(i) {
-  distanceLogs.splice(i,1);
+  distanceLogs.splice(i, 1);
   saveDistance();
   renderDistance();
 }
 
 function renderDistance() {
-  distanceTable.innerHTML = "";
+  const table = document.getElementById("distanceTable");
+  table.innerHTML = "";
 
-  let total = 0, weekly = 0, monthly = 0;
-  let personalBest = 0;
+  let total = 0;
+  let weekly = 0;
+  let monthly = 0;
 
   const now = new Date();
   const currentWeek = getWeekNumber(now);
   const currentMonth = now.getMonth();
   const currentYear = now.getFullYear();
 
-  distanceLogs.forEach(log=>{
-    total += log.distance;
-    if (log.distance > personalBest) personalBest = log.distance;
-
-    const logDate = new Date(log.date);
-
-    if (getWeekNumber(logDate) === currentWeek &&
-        logDate.getFullYear() === currentYear)
-      weekly += log.distance;
-
-    if (logDate.getMonth() === currentMonth &&
-        logDate.getFullYear() === currentYear)
-      monthly += log.distance;
-  });
-
-  distanceLogs.sort((a,b)=> new Date(b.date)-new Date(a.date));
+  distanceLogs.sort((a,b)=> new Date(b.date) - new Date(a.date));
 
   distanceLogs.forEach((log,i)=>{
-    const isPB = log.distance === personalBest;
-    distanceTable.innerHTML += `
-      <tr class="${isPB ? 'pb-highlight' : ''}">
+    const logDate = new Date(log.date);
+    total += log.distance;
+
+    if (
+      getWeekNumber(logDate) === currentWeek &&
+      logDate.getFullYear() === currentYear
+    ) {
+      weekly += log.distance;
+    }
+
+    if (
+      logDate.getMonth() === currentMonth &&
+      logDate.getFullYear() === currentYear
+    ) {
+      monthly += log.distance;
+    }
+
+    table.innerHTML += `
+      <tr>
         <td>${log.date}</td>
         <td>${log.route}</td>
-        <td>
-          ${log.distance}
-          ${isPB ? '<span class="pb-badge"> PB</span>' : ''}
-        </td>
+        <td>${log.distance}</td>
         <td><button onclick="deleteDistance(${i})">✕</button></td>
       </tr>`;
   });
 
-  totalKm.innerText = total.toFixed(1);
-  weeklyKm.innerText = weekly.toFixed(1) + " km";
-  monthlyKm.innerText = monthly.toFixed(1) + " km";
+  document.getElementById("totalKm").innerText = total.toFixed(1);
+  document.getElementById("weeklyKm").innerText = weekly.toFixed(1) + " km";
+  document.getElementById("monthlyKm").innerText = monthly.toFixed(1) + " km";
 }
 
 function getWeekNumber(d) {
