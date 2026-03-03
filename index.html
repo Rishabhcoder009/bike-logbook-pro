@@ -1,379 +1,278 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>BikeCare</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<!-- PWA Support -->
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="BikeCare">
-<meta name="theme-color" content="#121212">
+<meta name="theme-color" content="#0f0f0f">
 
 <style>
 body {
-    font-family: Arial, sans-serif;
-    background: #121212;
-    color: #ffffff;
-    margin: 20px;
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background: linear-gradient(135deg, #0f0f0f, #1a1a1a);
+  color: #ffffff;
+  padding: 20px;
 }
 
-h1, h2 {
-    text-align: center;
+h1 {
+  text-align: center;
+  font-weight: 600;
+  letter-spacing: 1px;
+  margin-bottom: 20px;
 }
 
-form {
-    background: #1e1e1e;
-    padding: 15px;
-    border-radius: 10px;
-    margin-bottom: 20px;
+.tabs {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+  gap: 10px;
 }
 
-label {
-    display: block;
-    margin-top: 10px;
+.tab-btn {
+  flex: 1;
+  max-width: 180px;
+  padding: 10px;
+  border-radius: 25px;
+  border: 1px solid #333;
+  background: #1a1a1a;
+  color: #aaa;
+  cursor: pointer;
+  transition: 0.3s;
 }
 
-select, input {
-    width: 100%;
-    padding: 8px;
-    margin-top: 5px;
-    border-radius: 5px;
-    border: none;
-}
-
-button {
-    margin-top: 10px;
-    padding: 8px 12px;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    font-weight: bold;
-}
-
-.add-btn { background: #2d6cdf; color: white; }
-.export-btn { background: #28a745; color: white; }
-.clear-btn { background: #dc3545; color: white; }
-.status-btn { background: #ff9800; color: white; }
-.edit-btn { background: #17a2b8; color: white; }
-.delete-btn { background: #dc3545; color: white; }
-
-table {
-    width: 100%;
-    border-collapse: collapse;
-    background: #1e1e1e;
-    border-radius: 10px;
-    overflow: hidden;
-}
-
-th, td {
-    padding: 10px;
-    text-align: center;
-}
-
-th {
-    background: #2d6cdf;
-}
-
-tr:nth-child(even) {
-    background: #2a2a2a;
+.tab-btn.active {
+  background: #2d6cdf;
+  color: #fff;
+  box-shadow: 0 0 15px rgba(45,108,223,0.6);
 }
 
 .card {
-    background: #1e1e1e;
-    padding: 15px;
-    border-radius: 10px;
-    margin-top: 10px;
+  background: rgba(255,255,255,0.05);
+  border-radius: 16px;
+  padding: 20px;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 8px 25px rgba(0,0,0,0.5);
 }
 
-.collapsible {
-    cursor: pointer;
-    padding: 8px;
-    background: #2d6cdf;
-    border-radius: 6px;
-    margin-top: 8px;
+input {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 12px;
+  border-radius: 10px;
+  border: 1px solid #333;
+  background: #121212;
+  color: white;
 }
 
-.collapsible-content {
-    display: none;
-    padding: 10px;
-    background: #2a2a2a;
-    border-radius: 6px;
-    margin-top: 5px;
+button.primary {
+  width: 100%;
+  padding: 10px;
+  border-radius: 10px;
+  border: none;
+  background: #2d6cdf;
+  color: white;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+button.primary:hover {
+  transform: scale(1.03);
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 15px;
+  font-size: 14px;
+}
+
+th, td {
+  padding: 10px;
+  border-bottom: 1px solid #333;
+  text-align: left;
+}
+
+th {
+  color: #aaa;
+  font-weight: 500;
+}
+
+.delete-btn {
+  background: transparent;
+  border: none;
+  color: #ff4d4d;
+  cursor: pointer;
+}
+
+#distanceStats {
+  margin-top: 10px;
+  font-weight: 500;
+  color: #2d6cdf;
 }
 </style>
 </head>
-
 <body>
 
-<h1>BikeCare Maintenance Log</h1>
+<h1>🚴 BIKECARE</h1>
 
-<form id="logForm">
-<label>Date:</label>
-<input type="date" id="date" required>
+<div class="tabs">
+  <button class="tab-btn active" id="maintBtn" onclick="showTab('maintenance')">Maintenance</button>
+  <button class="tab-btn" id="rideBtn" onclick="showTab('ride')">Ride Log</button>
+</div>
 
-<label for="task">Task:</label>
-<select id="task" required>
-<option value="Remove loose dirt">Cleaning - Remove loose dirt</option>
-<option value="Wash frame & wheels">Cleaning - Wash frame & wheels</option>
-<option value="Clean chain & drivetrain">Cleaning - Clean chain & drivetrain</option>
-<option value="Dry thoroughly">Cleaning - Dry thoroughly</option>
-<option value="Lubricate moving parts">Cleaning - Lubricate moving parts</option>
-<option value="Check tire pressure">Tires & Wheels - Check air pressure</option>
-<option value="Inspect tires">Tires & Wheels - Inspect for damage</option>
-<option value="Fix flat tire">Tires & Wheels - Fix flat tire</option>
-<option value="True wheels">Tires & Wheels - True wheels</option>
-<option value="Inspect brake pads">Brakes - Inspect brake pads</option>
-<option value="Adjust brake cables">Brakes - Adjust brake cable tension</option>
-<option value="Check wheel hubs">Bearings - Wheel hubs</option>
-<option value="Check headset">Bearings - Headset</option>
-<option value="Check pedals & bottom bracket">Bearings - Pedals & Bottom Bracket</option>
-<option value="Clean & lubricate chain">Chain - Clean & lubricate</option>
-<option value="Check chain tension">Chain - Check chain tension</option>
-<option value="Replace stretched chain">Chain - Replace if stretched</option>
-<option value="Inspect frame">Frame - Inspect frame</option>
-<option value="Tighten bolts">Frame - Tighten bolts</option>
-<option value="Check reflectors & bell">Frame - Check reflectors & bell</option>
-<option value="Flat tire repair">DIY - Flat tire repair</option>
-<option value="Loose brakes adjustment">DIY - Loose brakes adjustment</option>
-<option value="Squeaky chain lubrication">DIY - Squeaky chain lubrication</option>
-<option value="Wobbly wheels adjustment">DIY - Wobbly wheels adjustment</option>
-<option value="Tighten loose pedals">DIY - Tighten loose pedals</option>
-</select>
+<!-- MAINTENANCE -->
+<div id="maintenanceTab" class="card">
 
-<button type="submit" class="add-btn">Add Log</button>
-</form>
-
-<button onclick="exportToExcel()" class="export-btn">Export to Excel</button>
-<button onclick="clearLogs()" class="clear-btn">Clear All Logs</button>
-
-<br><br>
+<input type="date" id="date">
+<input type="text" id="task" placeholder="Maintenance task">
+<button class="primary" onclick="addLog()">Add Maintenance</button>
 
 <table>
 <thead>
 <tr>
 <th>Date</th>
 <th>Task</th>
-<th>Status</th>
-<th>Action</th>
+<th></th>
 </tr>
 </thead>
 <tbody id="logTable"></tbody>
 </table>
 
-<!-- Guide -->
-<section>
-<h2>Maintenance & Repair Guide</h2>
-<button id="toggleGuide">Show Guide</button>
-<div class="card" id="guideCard" style="display:none;">
-
-<!-- Collapsible sections -->
-<div>
-<h3 class="collapsible">1. Safety First</h3>
-<div class="collapsible-content">
-<ul>
-<li>Clean, well-lit workspace</li>
-<li>Gloves to protect hands</li>
-<li>Rags or old towels</li>
-<li>Bicycle stand (optional)</li>
-<li>Lubricants, degreaser, and cleaning brushes</li>
-<li>Basic tools: wrenches, screwdrivers, tire levers, pump, chain tool</li>
-</ul>
 </div>
 
-<h3 class="collapsible">2. Cleaning Your Bicycle</h3>
-<div class="collapsible-content">
-<ol>
-<li><strong>Remove loose dirt</strong>: Use soft brush or cloth.</li>
-<li><strong>Wash frame & wheels</strong>: Mild soap + water, avoid high-pressure near bearings.</li>
-<li><strong>Clean chain & drivetrain</strong>: Degrease, brush, rinse lightly.</li>
-<li><strong>Dry thoroughly</strong>: Make sure chain, brakes, hubs are dry.</li>
-<li><strong>Lubricate</strong>: Chain lube sparingly, wipe excess, lubricate brake pivots, pedals, moving parts.</li>
-</ol>
-</div>
+<!-- RIDE LOG -->
+<div id="rideTab" class="card" style="display:none;">
 
-<h3 class="collapsible">3. Tire & Wheel Maintenance</h3>
-<div class="collapsible-content">
-<ul>
-<li>Check air pressure (30–60 PSI)</li>
-<li>Inspect for damage (cuts, bulges, objects)</li>
-<li>Fix flat tires: Remove wheel, replace/patch tube, reinstall and inflate</li>
-<li>True wheels (if wobbling): Adjust spokes evenly</li>
-</ul>
-</div>
+<input type="date" id="distDate">
+<input type="text" id="route" placeholder="Route (HOM - GGC - HOM)">
+<input type="number" id="distance" placeholder="Distance (km)">
+<input type="text" id="distNotes" placeholder="Notes (optional)">
+<button class="primary" onclick="addDistance()">Add Ride</button>
 
-<h3 class="collapsible">4. Brake System</h3>
-<div class="collapsible-content">
-<ul>
-<li>Check brake pads & cables</li>
-<li>Adjust: Loosen cable bolt, pull lever, re-tighten, pads square on rim</li>
-</ul>
-</div>
+<div id="distanceStats"></div>
 
-<h3 class="collapsible">5. Bearings & Moving Parts</h3>
-<div class="collapsible-content">
-<ul>
-<li>Wheel hubs: adjust cone nuts, grease if needed</li>
-<li>Headset: smooth turning</li>
-<li>Pedals & bottom bracket: rotate smoothly, grease if stiff</li>
-</ul>
-</div>
-
-<h3 class="collapsible">6. Chain Maintenance</h3>
-<div class="collapsible-content">
-<ul>
-<li>Clean & degrease</li>
-<li>Lubricate lightly, wipe excess</li>
-<li>Check tension (~1–1.5 cm slack)</li>
-<li>Replace if stretched</li>
-</ul>
-</div>
-
-<h3 class="collapsible">7. Frame & Accessories Check</h3>
-<div class="collapsible-content">
-<ul>
-<li>Inspect frame for cracks/dents</li>
-<li>Tighten saddle, handlebars, rack, fenders, lights</li>
-<li>Check reflectors and bell</li>
-</ul>
-</div>
-
-<h3 class="collapsible">8. Routine Servicing Schedule</h3>
-<div class="collapsible-content">
 <table>
-<tr><th>Task</th><th>Frequency</th></tr>
-<tr><td>Clean frame & chain</td><td>Weekly / after muddy rides</td></tr>
-<tr><td>Check tire pressure</td><td>Every ride</td></tr>
-<tr><td>Lubricate chain & parts</td><td>Every 2–3 weeks</td></tr>
-<tr><td>Inspect brakes</td><td>Monthly</td></tr>
-<tr><td>Wheel alignment & bearings</td><td>Every 3–6 months</td></tr>
-<tr><td>Replace worn parts</td><td>As needed</td></tr>
+<thead>
+<tr>
+<th>Date</th>
+<th>Route</th>
+<th>KM</th>
+<th></th>
+</tr>
+</thead>
+<tbody id="distanceTable"></tbody>
 </table>
-</div>
 
-<h3 class="collapsible">9. DIY Repairs</h3>
-<div class="collapsible-content">
-<ul>
-<li>Flat tire → replace/patch</li>
-<li>Loose brakes → adjust cable tension</li>
-<li>Squeaky chain → clean & lube</li>
-<li>Wobbly wheels → adjust spokes slightly</li>
-<li>Loose pedals → tighten with wrench</li>
-</ul>
-</div>
-
-<h3 class="collapsible">10. Tools You Should Have</h3>
-<div class="collapsible-content">
-<ul>
-<li>Allen key set</li>
-<li>Adjustable wrench</li>
-<li>Tire levers</li>
-<li>Chain lubricant</li>
-<li>Degreaser & brushes</li>
-<li>Bike pump</li>
-<li>Spoke wrench (optional)</li>
-<li>Clean rags</li>
-</ul>
 </div>
 
 <script>
-let logs = JSON.parse(localStorage.getItem("bikeLogs")) || [];
-let editIndex = null;
+
+// Auto date
+document.getElementById("date").valueAsDate = new Date();
+document.getElementById("distDate").valueAsDate = new Date();
+
+// Tab switch
+function showTab(tab) {
+  document.getElementById("maintenanceTab").style.display = tab === "maintenance" ? "block" : "none";
+  document.getElementById("rideTab").style.display = tab === "ride" ? "block" : "none";
+
+  document.getElementById("maintBtn").classList.toggle("active", tab === "maintenance");
+  document.getElementById("rideBtn").classList.toggle("active", tab === "ride");
+}
+
+// Maintenance
+let logs = JSON.parse(localStorage.getItem("logs")) || [];
 
 function saveLogs() {
-    localStorage.setItem("bikeLogs", JSON.stringify(logs));
+  localStorage.setItem("logs", JSON.stringify(logs));
 }
 
-function renderLogs() {
-    const table = document.getElementById("logTable");
-    table.innerHTML = "";
-    logs.forEach((log, index) => {
-        table.innerHTML += `
-        <tr>
-            <td>${log.date}</td>
-            <td>${log.task}</td>
-            <td><button class="status-btn" onclick="toggleStatus(${index})">${log.status}</button></td>
-            <td>
-                <button class="edit-btn" onclick="editLog(${index})">Edit</button>
-                <button class="delete-btn" onclick="deleteLog(${index})">Delete</button>
-            </td>
-        </tr>`;
-    });
-}
+function addLog() {
+  const date = date.value;
+  const taskValue = task.value;
+  if (!date || !taskValue) return;
 
-document.getElementById("logForm").addEventListener("submit", function(e) {
-    e.preventDefault();
-    const date = document.getElementById("date").value;
-    const task = document.getElementById("task").value;
-
-    if (editIndex === null) {
-        logs.push({ date, task, status: "Pending" });
-    } else {
-        logs[editIndex].date = date;
-        logs[editIndex].task = task;
-        editIndex = null;
-    }
-
-    saveLogs();
-    renderLogs();
-    this.reset();
-});
-
-function toggleStatus(index) {
-    logs[index].status = logs[index].status === "Pending" ? "Completed" : "Pending";
-    saveLogs();
-    renderLogs();
-}
-
-function editLog(index) {
-    document.getElementById("date").value = logs[index].date;
-    document.getElementById("task").value = logs[index].task;
-    editIndex = index;
+  logs.push({ date, task: taskValue });
+  saveLogs();
+  renderLogs();
+  task.value = "";
 }
 
 function deleteLog(index) {
-    logs.splice(index, 1);
-    saveLogs();
-    renderLogs();
+  logs.splice(index, 1);
+  saveLogs();
+  renderLogs();
 }
 
-function clearLogs() {
-    if (confirm("Clear all logs?")) {
-        logs = [];
-        saveLogs();
-        renderLogs();
-    }
+function renderLogs() {
+  logTable.innerHTML = "";
+  logs.sort((a,b)=> new Date(b.date)-new Date(a.date));
+  logs.forEach((log,i)=>{
+    logTable.innerHTML += `
+      <tr>
+        <td>${log.date}</td>
+        <td>${log.task}</td>
+        <td><button class="delete-btn" onclick="deleteLog(${i})">✕</button></td>
+      </tr>`;
+  });
 }
-
-function exportToExcel() {
-    let csv = "Date,Task,Status\n";
-    logs.forEach(log => {
-        csv += `${log.date},${log.task},${log.status}\n`;
-    });
-    const blob = new Blob([csv], { type: "text/csv" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "bike_log.csv";
-    a.click();
-}
-
-document.getElementById("toggleGuide").addEventListener("click", function() {
-    const card = document.getElementById("guideCard");
-    card.style.display = card.style.display === "none" ? "block" : "none";
-});
-
-document.querySelectorAll(".collapsible").forEach(item => {
-    item.addEventListener("click", () => {
-        const content = item.nextElementSibling;
-        content.style.display = content.style.display === "block" ? "none" : "block";
-    });
-});
-
 renderLogs();
+
+// Ride Log
+let rides = JSON.parse(localStorage.getItem("distanceLogs")) || [];
+
+function saveRides() {
+  localStorage.setItem("distanceLogs", JSON.stringify(rides));
+}
+
+function addDistance() {
+  const date = distDate.value;
+  const routeVal = route.value;
+  const km = distance.value;
+  if (!date || !routeVal || !km) return;
+
+  rides.push({ date, route: routeVal, distance: parseFloat(km) });
+  saveRides();
+  renderRides();
+
+  route.value = "";
+  distance.value = "";
+  distNotes.value = "";
+}
+
+function deleteRide(index) {
+  rides.splice(index,1);
+  saveRides();
+  renderRides();
+}
+
+function renderRides() {
+  distanceTable.innerHTML = "";
+  let total = 0;
+
+  rides.sort((a,b)=> new Date(b.date)-new Date(a.date));
+  rides.forEach((ride,i)=>{
+    total += ride.distance;
+    distanceTable.innerHTML += `
+      <tr>
+        <td>${ride.date}</td>
+        <td>${ride.route}</td>
+        <td>${ride.distance}</td>
+        <td><button class="delete-btn" onclick="deleteRide(${i})">✕</button></td>
+      </tr>`;
+  });
+
+  distanceStats.innerHTML = "Total Distance: " + total.toFixed(2) + " km";
+}
+renderRides();
+
 </script>
 
 </body>
