@@ -6,7 +6,6 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 
-<!-- PWA Support -->
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon.png">
 <meta name="theme-color" content="#000000">
@@ -35,10 +34,7 @@ html, body {
   padding-bottom: calc(20px + env(safe-area-inset-bottom));
 }
 
-h1 {
-  font-size: 22px;
-  margin-bottom: 20px;
-}
+h1 { font-size: 22px; margin-bottom: 20px; }
 
 .card {
   background: #0b0f14;
@@ -51,11 +47,7 @@ h1 {
 }
 
 /* Tabs */
-.tabs {
-  display: flex;
-  gap: 8px;
-  margin-bottom: 20px;
-}
+.tabs { display: flex; gap: 8px; margin-bottom: 20px; }
 
 .tabs button {
   flex: 1;
@@ -85,6 +77,12 @@ input {
   font-size: 16px;
 }
 
+input[type="date"] {
+  max-width: 100%;
+  appearance: none;
+  -webkit-appearance: none;
+}
+
 button.primary {
   width: 100%;
   padding: 12px;
@@ -96,11 +94,8 @@ button.primary {
   margin-bottom: 10px;
 }
 
-/* Table Fix */
-.table-wrapper {
-  width: 100%;
-  overflow-x: auto;
-}
+/* Table */
+.table-wrapper { width: 100%; overflow-x: hidden; }
 
 table {
   width: 100%;
@@ -113,14 +108,12 @@ th, td {
   padding: 8px 6px;
   border-bottom: 1px solid #111;
   text-align: left;
-  word-wrap: break-word;
-  overflow-wrap: break-word;
+  word-break: break-word;
 }
 
 th:nth-child(1), td:nth-child(1) { width: 28%; }
-th:nth-child(2), td:nth-child(2) { width: 42%; }
+th:nth-child(2), td:nth-child(2) { width: 52%; }
 th:nth-child(3), td:nth-child(3) { width: 20%; }
-th:nth-child(4), td:nth-child(4) { width: 10%; }
 
 /* Dashboard */
 .stat {
@@ -132,29 +125,13 @@ th:nth-child(4), td:nth-child(4) { width: 10%; }
   border: 1px solid #111;
 }
 
-.stat-row {
-  display: flex;
-  gap: 8px;
-}
-
+.stat-row { display: flex; gap: 8px; }
 .stat.small { flex: 1; }
 
-.label {
-  font-size: 11px;
-  color: #666;
-  margin-bottom: 5px;
-}
+.label { font-size: 11px; color: #666; margin-bottom: 5px; }
+.value { font-size: 18px; font-weight: 600; }
+.main-stat .value { font-size: 36px; }
 
-.value {
-  font-size: 18px;
-  font-weight: 600;
-}
-
-.main-stat .value {
-  font-size: 36px;
-}
-
-/* Neon */
 .neon {
   color: #2d6cdf;
   text-shadow:
@@ -172,6 +149,40 @@ th:nth-child(4), td:nth-child(4) { width: 10%; }
   color: gold;
   font-weight: bold;
   margin-left: 5px;
+}
+
+/* Swipe */
+.swipe-row {
+  position: relative;
+  transition: transform 0.25s ease;
+}
+
+.swipe-row::after {
+  content: "Delete";
+  position: absolute;
+  right: -80px;
+  top: 0;
+  height: 100%;
+  width: 80px;
+  background: #ff3b30;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+}
+
+/* Route expand */
+.route-cell { cursor: pointer; }
+
+.collapsed {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.expanded {
+  white-space: normal;
 }
 </style>
 </head>
@@ -195,7 +206,7 @@ th:nth-child(4), td:nth-child(4) { width: 10%; }
 <div class="table-wrapper">
 <table>
 <thead>
-<tr><th>Date</th><th>Task</th><th></th></tr>
+<tr><th>Date</th><th>Task</th></tr>
 </thead>
 <tbody id="logTable"></tbody>
 </table>
@@ -212,24 +223,20 @@ th:nth-child(4), td:nth-child(4) { width: 10%; }
 
 <div class="stat-row">
 <div class="stat small">
-<div class="label">THIS WEEK</div>
-<div id="weeklyKm" class="value">0 km</div>
-</div>
-<div class="stat small">
 <div class="label">THIS MONTH</div>
 <div id="monthlyKm" class="value">0 km</div>
 </div>
 </div>
 
 <input type="date" id="distDate">
-<input type="text" id="route" placeholder="HOM - GGC - HOM">
+<input type="text" id="route" placeholder="ROUTE">
 <input type="number" id="distance" placeholder="Distance (km)">
 <button class="primary" onclick="addDistance()">Add Entry</button>
 
 <div class="table-wrapper">
 <table>
 <thead>
-<tr><th>Date</th><th>Route</th><th>KM</th><th></th></tr>
+<tr><th>Date</th><th>Route</th><th>KM</th></tr>
 </thead>
 <tbody id="distanceTable"></tbody>
 </table>
@@ -249,60 +256,172 @@ function showTab(tab){
   tab2.classList.toggle("active",tab==="distance");
 }
 
-/* Maintenance */
+/* =========================
+   MAINTENANCE
+========================= */
+
 let logs = JSON.parse(localStorage.getItem("logs")) || [];
-function saveLogs(){ localStorage.setItem("logs",JSON.stringify(logs)); }
+
+function saveLogs(){
+  localStorage.setItem("logs",JSON.stringify(logs));
+}
+
 function addLog(){
   if(!date.value || !task.value) return;
   logs.push({date:date.value,task:task.value});
-  saveLogs(); renderLogs(); task.value="";
+  saveLogs();
+  task.value="";
+  renderLogs();
 }
-function deleteLog(i){ logs.splice(i,1); saveLogs(); renderLogs(); }
+
 function renderLogs(){
   logTable.innerHTML="";
-  logs.sort((a,b)=>new Date(b.date)-new Date(a.date));
+
   logs.forEach((log,i)=>{
-    logTable.innerHTML+=`<tr><td>${log.date}</td><td>${log.task}</td><td><button onclick="deleteLog(${i})">✕</button></td></tr>`;
+    logTable.innerHTML+=`
+      <tr class="swipe-maint" data-index="${i}">
+        <td>${log.date}</td>
+        <td>${log.task}</td>
+      </tr>`;
+  });
+
+  initMaintenanceSwipe();
+}
+
+function initMaintenanceSwipe(){
+  let startX=0;
+
+  document.querySelectorAll(".swipe-maint").forEach(row=>{
+    row.addEventListener("touchstart", e=>{
+      startX=e.touches[0].clientX;
+    });
+
+    row.addEventListener("touchmove", e=>{
+      let diff=e.touches[0].clientX-startX;
+      if(diff<0){
+        row.style.transform=`translateX(${diff}px)`;
+      }
+    });
+
+    row.addEventListener("touchend", ()=>{
+      let current=parseInt(row.style.transform.replace(/[^0-9\-]/g,""))||0;
+
+      if(current<-60){
+        let index=row.dataset.index;
+        logs.splice(index,1);
+        saveLogs();
+        renderLogs();
+      }else{
+        row.style.transform="translateX(0)";
+      }
+    });
   });
 }
-renderLogs();
 
-/* Distance */
+/* =========================
+   DISTANCE / RIDE LOG
+========================= */
+
 let distanceLogs = JSON.parse(localStorage.getItem("distanceLogs")) || [];
-function saveDistance(){ localStorage.setItem("distanceLogs",JSON.stringify(distanceLogs)); }
+
+function saveDistance(){
+  localStorage.setItem("distanceLogs",JSON.stringify(distanceLogs));
+}
+
 function addDistance(){
   if(!distDate.value || !route.value || !distance.value) return;
-  distanceLogs.push({date:distDate.value,route:route.value,distance:parseFloat(distance.value)});
-  saveDistance(); renderDistance(); route.value=""; distance.value="";
+
+  distanceLogs.push({
+    date:distDate.value,
+    route:route.value,
+    distance:parseFloat(distance.value)
+  });
+
+  saveDistance();
+  route.value="";
+  distance.value="";
+  renderDistance();
 }
-function deleteDistance(i){ distanceLogs.splice(i,1); saveDistance(); renderDistance(); }
 
 function renderDistance(){
   distanceTable.innerHTML="";
-  let total=0, weekly=0, monthly=0, pb=0;
+  let total=0, monthly=0, pb=0;
   const now=new Date();
+
   distanceLogs.forEach(log=>{
     total+=log.distance;
     if(log.distance>pb) pb=log.distance;
+
     const d=new Date(log.date);
-    if(d.getMonth()===now.getMonth()) monthly+=log.distance;
+    if(d.getMonth()===now.getMonth() && d.getFullYear()===now.getFullYear()){
+      monthly+=log.distance;
+    }
   });
+
   distanceLogs.forEach((log,i)=>{
-    const isPB=log.distance===pb;
+    const isPB = log.distance===pb;
+
     distanceTable.innerHTML+=`
-      <tr class="${isPB?'pb-highlight':''}">
-      <td>${log.date}</td>
-      <td>${log.route}</td>
-      <td>${log.distance}${isPB?'<span class="pb-badge"> PB</span>':''}</td>
-      <td><button onclick="deleteDistance(${i})">✕</button></td>
+      <tr class="swipe-distance ${isPB?'pb-highlight':''}" data-index="${i}">
+        <td>${log.date}</td>
+        <td class="route-cell collapsed">${log.route}</td>
+        <td>${log.distance}${isPB?'<span class="pb-badge"> PB</span>':''}</td>
       </tr>`;
   });
+
   totalKm.innerText=total.toFixed(1);
-  weeklyKm.innerText="Auto";
   monthlyKm.innerText=monthly.toFixed(1)+" km";
+
+  initDistanceSwipe();
+  initExpand();
 }
+
+function initDistanceSwipe(){
+  let startX=0;
+
+  document.querySelectorAll(".swipe-distance").forEach(row=>{
+    row.addEventListener("touchstart", e=>{
+      startX=e.touches[0].clientX;
+    });
+
+    row.addEventListener("touchmove", e=>{
+      let diff=e.touches[0].clientX-startX;
+      if(diff<0){
+        row.style.transform=`translateX(${diff}px)`;
+      }
+    });
+
+    row.addEventListener("touchend", ()=>{
+      let current=parseInt(row.style.transform.replace(/[^0-9\-]/g,""))||0;
+
+      if(current<-60){
+        let index=row.dataset.index;
+        distanceLogs.splice(index,1);
+        saveDistance();
+        renderDistance();
+      }else{
+        row.style.transform="translateX(0)";
+      }
+    });
+  });
+}
+
+/* =========================
+   ROUTE EXPAND
+========================= */
+
+function initExpand(){
+  document.querySelectorAll(".route-cell").forEach(cell=>{
+    cell.addEventListener("click", ()=>{
+      cell.classList.toggle("collapsed");
+      cell.classList.toggle("expanded");
+    });
+  });
+}
+
+/* INIT */
+renderLogs();
 renderDistance();
 </script>
-
 </body>
 </html>
