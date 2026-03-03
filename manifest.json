@@ -1,14 +1,20 @@
 {
-  "name": "BikeCare - Maintenance Tracker",
+  "name": "BikeCare Dashboard",
   "short_name": "BikeCare",
   "start_url": "index.html",
   "display": "standalone",
-  "background_color": "#ffffff",
-  "theme_color": "#2d6cdf",
+  "background_color": "#000000",
+  "theme_color": "#000000",
+  "orientation": "portrait",
   "icons": [
     {
       "src": "icon.png",
-      "sizes": "180x180",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icon.png",
+      "sizes": "512x512",
       "type": "image/png"
     }
   ]
