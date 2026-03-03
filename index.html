@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>BikeCare</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!-- PWA Support -->
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon.png">
+<meta name="theme-color" content="#000000">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="BikeCare">
+
+<style>
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+  background: #000;
+  color: #f5f5f5;
+}
+
+.container {
+  max-width: 520px;
+  margin: auto;
+  padding: 20px;
+  padding-top: calc(20px + env(safe-area-inset-top));
+  padding-bottom: calc(20px + env(safe-area-inset-bottom));
+}
+
+h1 {
+  font-size: 24px;
+  margin-bottom: 20px;
+}
+
+.card {
+  background: #0b0f14;
+  padding: 18px;
+  border-radius: 20px;
+  margin-bottom: 20px;
+  border: 1px solid #111;
+  overflow: hidden;
+}
+
+.tabs {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.tabs button {
+  flex: 1;
+  padding: 12px;
+  border-radius: 14px;
+  border: none;
+  background: #111;
+  color: #666;
+  font-weight: 600;
+}
+
+.tabs button.active {
+  background: #2d6cdf;
+  color: white;
+  box-shadow: 0 0 20px rgba(45,108,223,0.7);
+}
+
+input {
+  width: 100%;
+  padding: 12px;
+  border-radius: 12px;
+  border: 1px solid #1a1f27;
+  background: #121821;
+  color: white;
+  margin-bottom: 12px;
+}
+
+button.primary {
+  width: 100%;
+  padding: 12px;
+  border-radius: 12px;
+  border: none;
+  background: #2d6cdf;
+  color: white;
+  font-weight: 600;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+  font-size: 13px;
+}
+
+th, td {
+  padding: 10px 6px;
+  border-bottom: 1px solid #111;
+  text-align: left;
+}
+
+/* Dashboard */
+
+.stat {
+  background: #0a0f14;
+  border-radius: 18px;
+  padding: 16px;
+  margin-bottom: 12px;
+  text-align: center;
+  border: 1px solid #111;
+}
+
+.stat-row {
+  display: flex;
+  gap: 10px;
+}
+
+.stat.small { flex: 1; }
+
+.label {
+  font-size: 11px;
+  color: #666;
+  margin-bottom: 5px;
+}
+
+.value {
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.main-stat .value {
+  font-size: 42px;
+}
+
+/* Neon total */
+.neon {
+  color: #2d6cdf;
+  text-shadow:
+    0 0 6px #2d6cdf,
+    0 0 14px #2d6cdf,
+    0 0 35px rgba(45,108,223,0.8);
+  animation: pulse 2.5s infinite alternate;
+}
+
+@keyframes pulse {
+  from { text-shadow: 0 0 10px #2d6cdf; }
+  to { text-shadow: 0 0 35px #2d6cdf; }
+}
+
+.divider {
+  height: 1px;
+  margin: 25px 0;
+  background: linear-gradient(90deg, transparent, #2d6cdf, transparent);
+}
+
+.pb-highlight {
+  background: linear-gradient(90deg, #1a1400, #000);
+}
+
+.pb-badge {
+  color: gold;
+  font-weight: bold;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+<h1>🚲 BikeCare</h1>
+
+<div class="tabs">
+  <button id="tab1" class="active" onclick="showTab('maintenance')">Maintenance</button>
+  <button id="tab2" onclick="showTab('distance')">Ride Log</button>
+</div>
+
+<!-- Maintenance -->
+<div id="maintenanceTab" class="card">
+<input type="date" id="date">
+<input type="text" id="task" placeholder="Task">
+<button class="primary" onclick="addLog()">Add Entry</button>
+
+<table>
+<thead>
+<tr><th>Date</th><th>Task</th><th></th></tr>
+</thead>
+<tbody id="logTable"></tbody>
+</table>
+</div>
+
+<!-- Distance -->
+<div id="distanceTab" class="card" style="display:none;">
+
+<div class="stat main-stat">
+<div class="label">TOTAL KM</div>
+<div id="totalKm" class="value neon">0</div>
+</div>
+
+<div class="stat-row">
+<div class="stat small">
+<div class="label">THIS WEEK</div>
+<div id="weeklyKm" class="value">0 km</div>
+</div>
+
+<div class="stat small">
+<div class="label">THIS MONTH</div>
+<div id="monthlyKm" class="value">0 km</div>
+</div>
+</div>
+
+<div class="divider"></div>
+
+<input type="date" id="distDate">
+<input type="text" id="route" placeholder="Route (HOM - GGC - HOM)">
+<input type="number" id="distance" placeholder="Distance (km)">
+<button class="primary" onclick="addDistance()">Add Entry</button>
+
+<table>
+<thead>
+<tr><th>Date</th><th>Route</th><th>KM</th><th></th></tr>
+</thead>
+<tbody id="distanceTable"></tbody>
+</table>
+
+</div>
+</div>
+
+<script>
+document.getElementById("date").valueAsDate = new Date();
+document.getElementById("distDate").valueAsDate = new Date();
+
+function showTab(tab){
+  maintenanceTab.style.display = tab==="maintenance"?"block":"none";
+  distanceTab.style.display = tab==="distance"?"block":"none";
+  tab1.classList.toggle("active",tab==="maintenance");
+  tab2.classList.toggle("active",tab==="distance");
+}
+
+/* Maintenance */
+let logs = JSON.parse(localStorage.getItem("logs")) || [];
+function saveLogs(){ localStorage.setItem("logs",JSON.stringify(logs)); }
+function addLog(){
+  if(!date.value || !task.value) return;
+  logs.push({date:date.value,task:task.value});
+  saveLogs(); renderLogs(); task.value="";
+}
+function deleteLog(i){ logs.splice(i,1); saveLogs(); renderLogs(); }
+function renderLogs(){
+  logTable.innerHTML="";
+  logs.sort((a,b)=>new Date(b.date)-new Date(a.date));
+  logs.forEach((log,i)=>{
+    logTable.innerHTML+=`<tr><td>${log.date}</td><td>${log.task}</td><td><button onclick="deleteLog(${i})">✕</button></td></tr>`;
+  });
+}
+renderLogs();
+
+/* Distance */
+let distanceLogs = JSON.parse(localStorage.getItem("distanceLogs")) || [];
+function saveDistance(){ localStorage.setItem("distanceLogs",JSON.stringify(distanceLogs)); }
+function addDistance(){
+  if(!distDate.value || !route.value || !distance.value) return;
+  distanceLogs.push({date:distDate.value,route:route.value,distance:parseFloat(distance.value)});
+  saveDistance(); renderDistance(); route.value=""; distance.value="";
+}
+function deleteDistance(i){ distanceLogs.splice(i,1); saveDistance(); renderDistance(); }
+
+function renderDistance(){
+  distanceTable.innerHTML="";
+  let total=0, weekly=0, monthly=0, pb=0;
+  const now=new Date();
+  const week=getWeekNumber(now);
+  distanceLogs.forEach(log=>{
+    total+=log.distance;
+    if(log.distance>pb) pb=log.distance;
+    const d=new Date(log.date);
+    if(getWeekNumber(d)===week && d.getFullYear()===now.getFullYear()) weekly+=log.distance;
+    if(d.getMonth()===now.getMonth() && d.getFullYear()===now.getFullYear()) monthly+=log.distance;
+  });
+  distanceLogs.forEach((log,i)=>{
+    const isPB=log.distance===pb;
+    distanceTable.innerHTML+=`
+      <tr class="${isPB?'pb-highlight':''}">
+      <td>${log.date}</td>
+      <td>${log.route}</td>
+      <td>${log.distance}${isPB?'<span class="pb-badge"> PB</span>':''}</td>
+      <td><button onclick="deleteDistance(${i})">✕</button></td>
+      </tr>`;
+  });
+  totalKm.innerText=total.toFixed(1);
+  weeklyKm.innerText=weekly.toFixed(1)+" km";
+  monthlyKm.innerText=monthly.toFixed(1)+" km";
+}
+function getWeekNumber(d){
+  const date=new Date(Date.UTC(d.getFullYear(),d.getMonth(),d.getDate()));
+  const dayNum=date.getUTCDay()||7;
+  date.setUTCDate(date.getUTCDate()+4-dayNum);
+  const yearStart=new Date(Date.UTC(date.getUTCFullYear(),0,1));
+  return Math.ceil((((date-yearStart)/86400000)+1)/7);
+}
+renderDistance();
+</script>
+
+</body>
+</html>
