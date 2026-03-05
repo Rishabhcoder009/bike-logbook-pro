@@ -1,427 +1,352 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>BikeCare</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Samurai Glow</title>
 
 <link rel="manifest" href="manifest.json">
-<link rel="apple-touch-icon" href="icon.png">
-<meta name="theme-color" content="#000000">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="BikeCare">
+<meta name="apple-mobile-web-app-title" content="Samurai Glow">
+<link rel="apple-touch-icon" href="icon-192.png">
 
 <style>
-* { box-sizing: border-box; }
 
-html, body {
+/* ================= THEME ================= */
+
+:root {
+  --bg: #0f0f0f;
+  --card: #151515;
+  --border: #222;
+  --text: #eaeaea;
+  --accent: #8b0000;
+}
+
+body {
   margin: 0;
-  padding: 0;
-  overflow-x: hidden;
   font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-  background: #000;
-  color: #f5f5f5;
+  background: var(--bg);
+  color: var(--text);
 }
 
-.container {
-  max-width: 520px;
-  width: 100%;
-  margin: auto;
-  padding: 20px;
-  padding-top: calc(20px + env(safe-area-inset-top));
-  padding-bottom: calc(20px + env(safe-area-inset-bottom));
+/* ================= SPLASH SCREEN ================= */
+
+#splash{
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:#000;
+display:flex;
+flex-direction:column;
+align-items:center;
+justify-content:center;
+z-index:9999;
+animation:splashFade 0.7s ease 2.5s forwards;
 }
 
-h1 { font-size: 22px; margin-bottom: 20px; }
+.logo-wrapper{
+position:relative;
+animation:logoPop 0.8s ease;
+}
+
+.splash-logo{
+width:130px;
+}
+
+.wheel{
+position:absolute;
+width:26px;
+height:26px;
+border:3px solid white;
+border-radius:50%;
+border-top-color:transparent;
+right:6px;
+bottom:4px;
+animation:spin 1s linear infinite;
+}
+
+.splash-title{
+margin-top:20px;
+font-size:30px;
+font-weight:600;
+color:#2d6cdf;
+
+text-shadow:
+0 0 8px #2d6cdf,
+0 0 18px #2d6cdf,
+0 0 35px rgba(45,108,223,0.9);
+
+animation:fadeIn 1.2s ease;
+}
+
+/* Splash Animations */
+
+@keyframes spin{
+from{transform:rotate(0deg)}
+to{transform:rotate(360deg)}
+}
+
+@keyframes logoPop{
+0%{transform:scale(0.7);opacity:0;}
+60%{transform:scale(1.08);}
+100%{transform:scale(1);opacity:1;}
+}
+
+@keyframes fadeIn{
+from{opacity:0}
+to{opacity:1}
+}
+
+@keyframes splashFade{
+to{opacity:0;visibility:hidden;}
+}
+
+/* ================= TOP TAB ================= */
+
+nav {
+  position: sticky;
+  top: 0;
+  display: flex;
+  justify-content: space-around;
+  backdrop-filter: blur(14px);
+  background: rgba(20,20,20,0.85);
+  border-bottom: 1px solid var(--border);
+  padding: 12px 0;
+  z-index: 100;
+}
+
+nav button {
+  background: none;
+  border: none;
+  color: #b33a3a;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+nav button.active {
+  color: var(--accent);
+  text-shadow: 0 0 6px rgba(139,0,0,0.4);
+}
+
+/* ================= SECTIONS ================= */
+
+section {
+  display: none;
+  animation: fade 0.4s ease;
+}
+
+section.active {
+  display: block;
+}
+
+@keyframes fade {
+  from {opacity: 0; transform: translateY(8px);}
+  to {opacity: 1; transform: translateY(0);}
+}
+
+/* ================= CARDS ================= */
 
 .card {
-  background: #0b0f14;
-  padding: 16px;
-  border-radius: 20px;
-  margin-bottom: 20px;
-  border: 1px solid #111;
-  overflow: hidden;
-  width: 100%;
-}
-
-/* Tabs */
-.tabs { display: flex; gap: 8px; margin-bottom: 20px; }
-
-.tabs button {
-  flex: 1;
-  padding: 12px;
-  border-radius: 14px;
-  border: none;
-  background: #111;
-  color: #666;
-  font-weight: 600;
-}
-
-.tabs button.active {
-  background: #2d6cdf;
-  color: white;
-  box-shadow: 0 0 20px rgba(45,108,223,0.7);
-}
-
-/* Inputs */
-input {
-  width: 100%;
-  padding: 12px;
-  border-radius: 12px;
-  border: 1px solid #1a1f27;
-  background: #121821;
-  color: white;
-  margin-bottom: 12px;
-  font-size: 16px;
-}
-
-input[type="date"] {
-  max-width: 100%;
-  appearance: none;
-  -webkit-appearance: none;
-}
-
-button.primary {
-  width: 100%;
-  padding: 12px;
-  border-radius: 12px;
-  border: none;
-  background: #2d6cdf;
-  color: white;
-  font-weight: 600;
-  margin-bottom: 10px;
-}
-
-/* Table */
-.table-wrapper { width: 100%; overflow-x: hidden; }
-
-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 13px;
-  table-layout: fixed;
-}
-
-th, td {
-  padding: 8px 6px;
-  border-bottom: 1px solid #111;
-  text-align: left;
-  word-break: break-word;
-}
-
-th:nth-child(1), td:nth-child(1) { width: 28%; }
-th:nth-child(2), td:nth-child(2) { width: 52%; }
-th:nth-child(3), td:nth-child(3) { width: 20%; }
-
-/* Dashboard */
-.stat {
-  background: #0a0f14;
+  background: var(--card);
+  border: 1px solid var(--border);
   border-radius: 18px;
-  padding: 16px;
-  margin-bottom: 12px;
+  padding: 18px;
+  margin: 16px;
+  transition: 0.3s ease;
+}
+
+.card:hover {
+  background: #1a1a1a;
+  box-shadow: 0 0 15px rgba(255,255,255,0.04);
+}
+
+h2 {
   text-align: center;
-  border: 1px solid #111;
+  margin-top: 20px;
+  text-shadow: 0 0 8px rgba(255,255,255,0.05);
 }
 
-.stat-row { display: flex; gap: 8px; }
-.stat.small { flex: 1; }
-
-.label { font-size: 11px; color: #666; margin-bottom: 5px; }
-.value { font-size: 18px; font-weight: 600; }
-.main-stat .value { font-size: 36px; }
-
-.neon {
-  color: #2d6cdf;
-  text-shadow:
-    0 0 6px #2d6cdf,
-    0 0 14px #2d6cdf,
-    0 0 30px rgba(45,108,223,0.8);
-}
-
-/* PB Highlight */
-.pb-highlight {
-  background: linear-gradient(90deg, #1a1400, #000);
-}
-
-.pb-badge {
-  color: gold;
-  font-weight: bold;
-  margin-left: 5px;
-}
-
-/* Swipe */
-.swipe-row {
-  position: relative;
-  transition: transform 0.25s ease;
-}
-
-.swipe-row::after {
-  content: "Delete";
-  position: absolute;
-  right: -80px;
-  top: 0;
-  height: 100%;
-  width: 80px;
-  background: #ff3b30;
-  color: white;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: bold;
-}
-
-/* Route expand */
-.route-cell { cursor: pointer; }
-
-.collapsed {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.expanded {
-  white-space: normal;
-}
 </style>
 </head>
 
 <body>
 
-<div class="container">
-<h1>🚲 BikeCare</h1>
+<!-- SPLASH SCREEN -->
 
-<div class="tabs">
-  <button id="tab1" class="active" onclick="showTab('maintenance')">Maintenance</button>
-  <button id="tab2" onclick="showTab('distance')">Ride Log</button>
+<div id="splash">
+<div class="logo-wrapper">
+<img src="icon-192.png" class="splash-logo">
+<div class="wheel"></div>
 </div>
 
-<!-- Maintenance -->
-<div id="maintenanceTab" class="card">
-<input type="date" id="date">
-<input type="text" id="task" placeholder="Task">
-<button class="primary" onclick="addLog()">Add Entry</button>
-
-<div class="table-wrapper">
-<table>
-<thead>
-<tr><th>Date</th><th>Task</th></tr>
-</thead>
-<tbody id="logTable"></tbody>
-</table>
-</div>
+<h1 class="splash-title">BikeCare</h1>
 </div>
 
-<!-- Distance -->
-<div id="distanceTab" class="card" style="display:none;">
+<nav>
+<button onclick="showSection('training')" class="active">Workout</button>
+<button onclick="showSection('diet')">Diet</button>
+<button onclick="showSection('glow')">Grooming</button>
+</nav>
 
-<div class="stat main-stat">
-<div class="label">TOTAL KM</div>
-<div id="totalKm" class="value neon">0</div>
-</div>
+<!-- WORKOUT -->
+<section id="training" class="active">
 
-<div class="stat-row">
-<div class="stat small">
-<div class="label">THIS MONTH</div>
-<div id="monthlyKm" class="value">0 km</div>
-</div>
-</div>
+<h2>⚔️ 5 Phase Transformation Plan (100–120kg Safe Progression)</h2>
 
-<input type="date" id="distDate">
-<input type="text" id="route" placeholder="ROUTE">
-<input type="number" id="distance" placeholder="Distance (km)">
-<button class="primary" onclick="addDistance()">Add Entry</button>
-
-<div class="table-wrapper">
-<table>
-<thead>
-<tr><th>Date</th><th>Route</th><th>KM</th></tr>
-</thead>
-<tbody id="distanceTable"></tbody>
-</table>
+<div class="card">
+<h3>Phase 1 – After Boards (4 Weeks)</h3>
+<ul>
+<li>30–40 min Brisk Walking (5 days)</li>
+<li>Seated Dumbbell Shoulder Press – 3x12</li>
+<li>Chair Squats – 3x12</li>
+<li>Resistance Band Rows – 3x15</li>
+<li>Glute Bridges – 3x15</li>
+<li>Core Brace Hold – 20 sec x 3</li>
+<li>2 Rest Days</li>
+</ul>
+<p>Goal: Reduce fat safely, strengthen joints.</p>
 </div>
 
+<div class="card">
+<h3>Phase 2 – School Start (1 Month)</h3>
+<ul>
+<li>3 Walking Days (30 min)</li>
+<li>Leg Press – 3x12</li>
+<li>Machine Chest Press – 3x12</li>
+<li>Seated Rows – 3x12</li>
+<li>Low Step-ups – 3x10 each leg</li>
+<li>2 Rest Days</li>
+</ul>
+<p>Goal: Maintain progress with school schedule.</p>
 </div>
+
+<div class="card">
+<h3>Phase 3 – 1.5 Month Break</h3>
+<ul>
+<li>45 min Fast Walking OR Cycling (4 days)</li>
+<li>Full Body Machine Workout (3 days)</li>
+<li>Leg Press – 4x12</li>
+<li>Chest Press – 4x12</li>
+<li>Lat Pulldown – 4x12</li>
+<li>Seated Shoulder Press – 3x12</li>
+<li>Seated Knee Raises – 3x12</li>
+<li>1 Rest Day</li>
+</ul>
+<p>Goal: Strong fat loss + muscle build safely.</p>
 </div>
+
+<div class="card">
+<h3>⚔️ Phase 5 – Build My Physique</h3>
+
+<h4>Push Day</h4>
+<ul>
+<li>Chest Press – 4x10</li>
+<li>Seated Shoulder Press – 4x10</li>
+<li>Tricep Pushdown – 3x12</li>
+</ul>
+
+<h4>Pull Day</h4>
+<ul>
+<li>Lat Pulldown – 4x10</li>
+<li>Seated Row – 4x12</li>
+<li>Dumbbell Curl – 3x12</li>
+</ul>
+
+<h4>Leg Day</h4>
+<ul>
+<li>Leg Press – 4x12</li>
+<li>Hamstring Curl – 3x12</li>
+<li>Glute Bridge – 3x15</li>
+</ul>
+
+</div>
+
+</section>
+
+<!-- DIET -->
+<section id="diet">
+
+<h2>🥗 Fat Loss + Muscle Diet</h2>
+
+<div class="card">
+<h3>Breakfast</h3>
+<ul>
+<li>Oats + Milk</li>
+<li>Paneer 80–100g OR Eggs</li>
+<li>1 Fruit</li>
+<li>5 Almonds</li>
+</ul>
+</div>
+
+<div class="card">
+<h3>Lunch</h3>
+<ul>
+<li>2 Roti</li>
+<li>Dal / Rajma</li>
+<li>Sprouts or Paneer</li>
+<li>Large Salad</li>
+</ul>
+</div>
+
+<div class="card">
+<h3>Dinner</h3>
+<ul>
+<li>1–2 Roti</li>
+<li>Vegetable sabzi</li>
+<li>Curd</li>
+</ul>
+</div>
+
+</section>
+
+<!-- GROOMING -->
+<section id="glow">
+
+<h2>🔥 Grooming, Skin & Hair Discipline</h2>
+
+<div class="card">
+<h3>Skin Care</h3>
+<ul>
+<li>Morning: Gentle face wash</li>
+<li>Apply moisturizer daily</li>
+<li>Use sunscreen outdoors</li>
+</ul>
+</div>
+
+<div class="card">
+<h3>Hair Care</h3>
+<ul>
+<li>Oil hair 1–2x per week</li>
+<li>Shampoo 2–3x per week</li>
+<li>Trim every 6–8 weeks</li>
+</ul>
+</div>
+
+</section>
 
 <script>
-document.getElementById("date").valueAsDate = new Date();
-document.getElementById("distDate").valueAsDate = new Date();
 
-function showTab(tab){
-  maintenanceTab.style.display = tab==="maintenance"?"block":"none";
-  distanceTab.style.display = tab==="distance"?"block":"none";
-  tab1.classList.toggle("active",tab==="maintenance");
-  tab2.classList.toggle("active",tab==="distance");
+function showSection(id){
+
+document.querySelectorAll("section").forEach(sec =>
+sec.classList.remove("active"))
+
+document.getElementById(id).classList.add("active")
+
+document.querySelectorAll("nav button").forEach(btn =>
+btn.classList.remove("active"))
+
+event.target.classList.add("active")
+
 }
 
-/* =========================
-   MAINTENANCE
-========================= */
-
-let logs = JSON.parse(localStorage.getItem("logs")) || [];
-
-function saveLogs(){
-  localStorage.setItem("logs",JSON.stringify(logs));
-}
-
-function addLog(){
-  if(!date.value || !task.value) return;
-  logs.push({date:date.value,task:task.value});
-  saveLogs();
-  task.value="";
-  renderLogs();
-}
-
-function renderLogs(){
-  logTable.innerHTML="";
-
-  logs.forEach((log,i)=>{
-    logTable.innerHTML+=`
-      <tr class="swipe-maint" data-index="${i}">
-        <td>${log.date}</td>
-        <td>${log.task}</td>
-      </tr>`;
-  });
-
-  initMaintenanceSwipe();
-}
-
-function initMaintenanceSwipe(){
-  let startX=0;
-
-  document.querySelectorAll(".swipe-maint").forEach(row=>{
-    row.addEventListener("touchstart", e=>{
-      startX=e.touches[0].clientX;
-    });
-
-    row.addEventListener("touchmove", e=>{
-      let diff=e.touches[0].clientX-startX;
-      if(diff<0){
-        row.style.transform=`translateX(${diff}px)`;
-      }
-    });
-
-    row.addEventListener("touchend", ()=>{
-      let current=parseInt(row.style.transform.replace(/[^0-9\-]/g,""))||0;
-
-      if(current<-60){
-        let index=row.dataset.index;
-        logs.splice(index,1);
-        saveLogs();
-        renderLogs();
-      }else{
-        row.style.transform="translateX(0)";
-      }
-    });
-  });
-}
-
-/* =========================
-   DISTANCE / RIDE LOG
-========================= */
-
-let distanceLogs = JSON.parse(localStorage.getItem("distanceLogs")) || [];
-
-function saveDistance(){
-  localStorage.setItem("distanceLogs",JSON.stringify(distanceLogs));
-}
-
-function addDistance(){
-  if(!distDate.value || !route.value || !distance.value) return;
-
-  distanceLogs.push({
-    date:distDate.value,
-    route:route.value,
-    distance:parseFloat(distance.value)
-  });
-
-  saveDistance();
-  route.value="";
-  distance.value="";
-  renderDistance();
-}
-
-function renderDistance(){
-  distanceTable.innerHTML="";
-  let total=0, monthly=0, pb=0;
-  const now=new Date();
-
-  distanceLogs.forEach(log=>{
-    total+=log.distance;
-    if(log.distance>pb) pb=log.distance;
-
-    const d=new Date(log.date);
-    if(d.getMonth()===now.getMonth() && d.getFullYear()===now.getFullYear()){
-      monthly+=log.distance;
-    }
-  });
-
-  distanceLogs.forEach((log,i)=>{
-    const isPB = log.distance===pb;
-
-    distanceTable.innerHTML+=`
-      <tr class="swipe-distance ${isPB?'pb-highlight':''}" data-index="${i}">
-        <td>${log.date}</td>
-        <td class="route-cell collapsed">${log.route}</td>
-        <td>${log.distance}${isPB?'<span class="pb-badge"> PB</span>':''}</td>
-      </tr>`;
-  });
-
-  totalKm.innerText=total.toFixed(1);
-  monthlyKm.innerText=monthly.toFixed(1)+" km";
-
-  initDistanceSwipe();
-  initExpand();
-}
-
-function initDistanceSwipe(){
-  let startX=0;
-
-  document.querySelectorAll(".swipe-distance").forEach(row=>{
-    row.addEventListener("touchstart", e=>{
-      startX=e.touches[0].clientX;
-    });
-
-    row.addEventListener("touchmove", e=>{
-      let diff=e.touches[0].clientX-startX;
-      if(diff<0){
-        row.style.transform=`translateX(${diff}px)`;
-      }
-    });
-
-    row.addEventListener("touchend", ()=>{
-      let current=parseInt(row.style.transform.replace(/[^0-9\-]/g,""))||0;
-
-      if(current<-60){
-        let index=row.dataset.index;
-        distanceLogs.splice(index,1);
-        saveDistance();
-        renderDistance();
-      }else{
-        row.style.transform="translateX(0)";
-      }
-    });
-  });
-}
-
-/* =========================
-   ROUTE EXPAND
-========================= */
-
-function initExpand(){
-  document.querySelectorAll(".route-cell").forEach(cell=>{
-    cell.addEventListener("click", ()=>{
-      cell.classList.toggle("collapsed");
-      cell.classList.toggle("expanded");
-    });
-  });
-}
-
-/* INIT */
-renderLogs();
-renderDistance();
 </script>
+
 </body>
 </html>
