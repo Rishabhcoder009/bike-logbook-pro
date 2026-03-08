@@ -15,6 +15,7 @@
 <meta name="apple-mobile-web-app-title" content="BikeCare">
 
 <style>
+
 *{box-sizing:border-box;}
 
 html,body{
@@ -26,7 +27,7 @@ background:#000;
 color:#f5f5f5;
 }
 
-/* SPLASH SCREEN */
+/* SPLASH */
 
 #splash{
 position:fixed;
@@ -44,41 +45,35 @@ transition:opacity .6s ease;
 }
 
 #splash img{
-width:120px;
+width:130px;
 margin-bottom:20px;
 }
 
 #splash h1{
-font-size:34px;
-font-weight:700;
+font-size:36px;
 color:#2d6cdf;
 text-shadow:
 0 0 10px #2d6cdf,
 0 0 20px #2d6cdf,
 0 0 40px rgba(45,108,223,.9);
-animation:pulse 2s infinite;
 }
 
-@keyframes pulse{
-0%{opacity:.7}
-50%{opacity:1}
-100%{opacity:.7}
-}
-
-/* APP CONTAINER */
+/* CONTAINER */
 
 .container{
-max-width:520px;
+max-width:600px;
 width:100%;
 margin:auto;
-padding:20px;
-padding-top:calc(20px + env(safe-area-inset-top));
-padding-bottom:calc(20px + env(safe-area-inset-bottom));
+padding:24px;
+padding-top:calc(24px + env(safe-area-inset-top));
+padding-bottom:calc(24px + env(safe-area-inset-bottom));
 display:none;
 }
 
+/* TITLE */
+
 h1{
-font-size:22px;
+font-size:26px;
 margin-bottom:20px;
 }
 
@@ -86,11 +81,10 @@ margin-bottom:20px;
 
 .card{
 background:#0b0f14;
-padding:16px;
-border-radius:20px;
-margin-bottom:20px;
+padding:22px;
+border-radius:24px;
+margin-bottom:22px;
 border:1px solid #111;
-overflow:hidden;
 width:100%;
 }
 
@@ -98,18 +92,19 @@ width:100%;
 
 .tabs{
 display:flex;
-gap:8px;
-margin-bottom:20px;
+gap:10px;
+margin-bottom:22px;
 }
 
 .tabs button{
 flex:1;
-padding:12px;
-border-radius:14px;
+padding:16px;
+border-radius:18px;
 border:none;
 background:#111;
 color:#666;
 font-weight:600;
+font-size:16px;
 }
 
 .tabs button.active{
@@ -118,28 +113,41 @@ color:white;
 box-shadow:0 0 20px rgba(45,108,223,.7);
 }
 
-/* INPUTS */
+/* INPUT */
 
 input{
 width:100%;
-padding:12px;
-border-radius:12px;
+max-width:100%;
+padding:14px;
+border-radius:14px;
 border:1px solid #1a1f27;
 background:#121821;
 color:white;
-margin-bottom:12px;
+margin-bottom:14px;
 font-size:16px;
 }
 
+/* iPhone date fix */
+
+input[type="date"]{
+width:100%;
+max-width:100%;
+appearance:none;
+-webkit-appearance:none;
+}
+
+/* BUTTON */
+
 button.primary{
 width:100%;
-padding:12px;
-border-radius:12px;
+padding:14px;
+border-radius:14px;
 border:none;
 background:#2d6cdf;
 color:white;
 font-weight:600;
-margin-bottom:10px;
+font-size:16px;
+margin-bottom:12px;
 }
 
 /* TABLE */
@@ -147,14 +155,13 @@ margin-bottom:10px;
 table{
 width:100%;
 border-collapse:collapse;
-font-size:13px;
+font-size:14px;
 table-layout:fixed;
 }
 
 th,td{
-padding:8px 6px;
+padding:10px 6px;
 border-bottom:1px solid #111;
-text-align:left;
 word-break:break-word;
 }
 
@@ -166,16 +173,16 @@ th:nth-child(3),td:nth-child(3){width:20%}
 
 .stat{
 background:#0a0f14;
-border-radius:18px;
-padding:16px;
-margin-bottom:12px;
+border-radius:20px;
+padding:18px;
+margin-bottom:14px;
 text-align:center;
 border:1px solid #111;
 }
 
 .stat-row{
 display:flex;
-gap:8px;
+gap:10px;
 }
 
 .stat.small{
@@ -183,18 +190,17 @@ flex:1;
 }
 
 .label{
-font-size:11px;
+font-size:12px;
 color:#666;
-margin-bottom:5px;
 }
 
 .value{
-font-size:18px;
+font-size:20px;
 font-weight:600;
 }
 
 .main-stat .value{
-font-size:36px;
+font-size:40px;
 }
 
 .neon{
@@ -217,9 +223,11 @@ font-weight:bold;
 margin-left:5px;
 }
 
-/* ROUTE EXPAND */
+/* ROUTE */
 
-.route-cell{cursor:pointer;}
+.route-cell{
+cursor:pointer;
+}
 
 .collapsed{
 white-space:nowrap;
@@ -236,7 +244,7 @@ white-space:normal;
 
 <body>
 
-<!-- SPLASH SCREEN -->
+<!-- SPLASH -->
 
 <div id="splash">
 <img src="logo.png">
@@ -291,7 +299,7 @@ white-space:normal;
 </div>
 
 <input type="date" id="distDate">
-<input type="text" id="route" placeholder="Route (HOM - GGC - HOM)">
+<input type="text" id="route" placeholder="Route">
 <input type="number" id="distance" placeholder="Distance (km)">
 
 <button class="primary" onclick="addDistance()">Add Entry</button>
@@ -314,35 +322,28 @@ white-space:normal;
 
 <script>
 
-/* SPLASH TRANSITION */
-
 setTimeout(()=>{
-document.getElementById("splash").style.opacity="0";
+splash.style.opacity="0";
 setTimeout(()=>{
-document.getElementById("splash").style.display="none";
-document.getElementById("app").style.display="block";
+splash.style.display="none";
+app.style.display="block";
 },600);
 },1300);
-
-
-/* AUTO DATE */
 
 document.getElementById("date").valueAsDate=new Date();
 document.getElementById("distDate").valueAsDate=new Date();
 
-/* TABS */
-
 function showTab(tab){
 
-maintenanceTab.style.display = tab==="maintenance"?"block":"none";
-distanceTab.style.display = tab==="distance"?"block":"none";
+maintenanceTab.style.display=tab==="maintenance"?"block":"none";
+distanceTab.style.display=tab==="distance"?"block":"none";
 
 tab1.classList.toggle("active",tab==="maintenance");
 tab2.classList.toggle("active",tab==="distance");
 
 }
 
-/* MAINTENANCE */
+/* maintenance */
 
 let logs=JSON.parse(localStorage.getItem("logs"))||[];
 
@@ -354,13 +355,12 @@ function addLog(){
 
 if(!date.value||!task.value)return;
 
-logs.push({
-date:date.value,
-task:task.value
-});
+logs.push({date:date.value,task:task.value});
 
 saveLogs();
+
 task.value="";
+
 renderLogs();
 
 }
@@ -381,7 +381,7 @@ logTable.innerHTML+=`
 
 }
 
-/* DISTANCE */
+/* distance */
 
 let distanceLogs=JSON.parse(localStorage.getItem("distanceLogs"))||[];
 
@@ -422,7 +422,7 @@ distanceLogs.forEach(log=>{
 
 total+=log.distance;
 
-if(log.distance>pb) pb=log.distance;
+if(log.distance>pb)pb=log.distance;
 
 const d=new Date(log.date);
 
@@ -451,8 +451,6 @@ monthlyKm.innerText=monthly.toFixed(1)+" km";
 initExpand();
 
 }
-
-/* ROUTE EXPAND */
 
 function initExpand(){
 
